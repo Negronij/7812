@@ -68,11 +68,12 @@ const labDrawContainer = document.getElementById('lab-draw-container');
 const labCanvas = document.getElementById('lab-canvas');
 const btnClearCanvas = document.getElementById('btn-clear-canvas');
 const btnSaveDraw = document.getElementById('btn-save-draw');
-const ctx = labCanvas.getContext('2d');
+const ctx = labCanvas ? labCanvas.getContext('2d') : null;
 
 // Sidebar & Gemini
 const sidebar = document.getElementById('sidebar');
-const btnToggleSidebar = document.getElementById('btn-toggle-sidebar');
+const btnToggleSidebarAll = document.getElementById('btn-toggle-sidebar-all');
+const mainContainer = document.getElementById('main-container');
 const btnCloseSidebar = document.getElementById('btn-close-sidebar');
 const btnGeminiToggle = document.getElementById('btn-gemini-toggle');
 const geminiChat = document.getElementById('gemini-chat');
@@ -250,14 +251,23 @@ btnModeDraw.addEventListener('click', () => {
 
 // Drawing Logic
 let drawing = false;
+let currentTool = 'pen';
+let currentColor = '#ffffff';
 
 function resizeCanvas() {
+  if (!labCanvas) return;
   const container = labCanvas.parentElement;
   labCanvas.width = container.clientWidth;
   labCanvas.height = container.clientHeight;
-  ctx.strokeStyle = '#ffffff';
-  ctx.lineWidth = 2;
+  applyDrawingSettings();
+}
+
+function applyDrawingSettings() {
+  if (!ctx) return;
+  ctx.strokeStyle = currentTool === 'eraser' ? 'var(--bg-elevated)' : currentColor;
+  ctx.lineWidth = currentTool === 'eraser' ? 40 : 3;
   ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
 }
 
 function startDrawing(e) {
@@ -267,11 +277,11 @@ function startDrawing(e) {
 
 function stopDrawing() {
   drawing = false;
-  ctx.beginPath();
+  if (ctx) ctx.beginPath();
 }
 
 function draw(e) {
-  if (!drawing) return;
+  if (!drawing || !ctx) return;
   
   const rect = labCanvas.getBoundingClientRect();
   const x = (e.clientX || (e.touches && e.touches[0].clientX)) - rect.left;
@@ -283,13 +293,46 @@ function draw(e) {
   ctx.moveTo(x, y);
 }
 
-labCanvas.addEventListener('mousedown', startDrawing);
-labCanvas.addEventListener('mousemove', draw);
-window.addEventListener('mouseup', stopDrawing);
+if (labCanvas) {
+  labCanvas.addEventListener('mousedown', startDrawing);
+  labCanvas.addEventListener('mousemove', draw);
+  window.addEventListener('mouseup', stopDrawing);
 
-labCanvas.addEventListener('touchstart', (e) => { e.preventDefault(); startDrawing(e); });
-labCanvas.addEventListener('touchmove', (e) => { e.preventDefault(); draw(e); });
-labCanvas.addEventListener('touchend', stopDrawing);
+  labCanvas.addEventListener('touchstart', (e) => { e.preventDefault(); startDrawing(e); });
+  labCanvas.addEventListener('touchmove', (e) => { e.preventDefault(); draw(e); });
+  labCanvas.addEventListener('touchend', stopDrawing);
+
+  // Tools & Colors
+  const btnPen = document.getElementById('btn-tool-pen');
+  const btnEraser = document.getElementById('btn-tool-eraser');
+  const colorBtns = document.querySelectorAll('.color-btn');
+
+  if (btnPen) btnPen.addEventListener('click', () => {
+    currentTool = 'pen';
+    btnPen.classList.add('active');
+    btnEraser.classList.remove('active');
+    applyDrawingSettings();
+  });
+
+  if (btnEraser) btnEraser.addEventListener('click', () => {
+    currentTool = 'eraser';
+    btnEraser.classList.add('active');
+    btnPen.classList.remove('active');
+    applyDrawingSettings();
+  });
+
+  colorBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      currentColor = btn.getAttribute('data-color');
+      colorBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentTool = 'pen'; // Auto switch to pen when color picked
+      if (btnPen) btnPen.classList.add('active');
+      if (btnEraser) btnEraser.classList.remove('active');
+      applyDrawingSettings();
+    });
+  });
+}
 
 btnClearCanvas.addEventListener('click', () => {
   ctx.clearRect(0, 0, labCanvas.width, labCanvas.height);
@@ -303,8 +346,12 @@ btnSaveDraw.addEventListener('click', () => {
 });
 
 // --- SIDEBAR & NAVIGATION ---
-if (btnToggleSidebar) btnToggleSidebar.addEventListener('click', () => {
-  sidebar.classList.remove('-translate-x-full');
+if (btnToggleSidebarAll) btnToggleSidebarAll.addEventListener('click', () => {
+  const isCollapsed = sidebar.classList.toggle('collapsed');
+  if (mainContainer) {
+    mainContainer.classList.toggle('sidebar-open-padding', !isCollapsed);
+    mainContainer.classList.toggle('sidebar-collapsed-padding', isCollapsed);
+  }
 });
 
 if (btnCloseSidebar) btnCloseSidebar.addEventListener('click', () => {
