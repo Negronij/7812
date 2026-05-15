@@ -1,16 +1,209 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <title>Volver a Sentir - Dashboard</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Volver a Sentir</title>
+  
+  <!-- Fuentes -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+  
+  <!-- Estilos -->
+  <link rel="stylesheet" href="style.css">
+  
+  <!-- Iconos -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+
+  <!-- LOADING SPINNER -->
+  <div id="loading" class="flex items-center justify-center h-screen w-full fixed top-0 left-0 bg-base z-50">
+    <i data-lucide="loader-2" class="spin text-muted" style="width: 48px; height: 48px;"></i>
+  </div>
+
+  <!-- DASHBOARD PRINCIPAL -->
+  <div id="dashboard" class="container hidden">
+    
+    <!-- 10. FRASE CENTRAL -->
+    <header class="text-center mb-8 mt-4">
+      <h1 class="text-huge text-muted">NO ESTAMOS INTENTANDO SOBREVIVIR.</h1>
+      <h1 class="text-huge text-primary">ESTAMOS CONSTRUYENDO LA VIDA QUE QUEREMOS DOMINAR.</h1>
+    </header>
+
+    <div class="grid-dashboard">
+      
+      <!-- COLUMNA IZQUIERDA -->
+      <div class="flex-col gap-6">
+        
+        <!-- 7. IDENTIDAD -->
+        <section class="card">
+          <div class="card-header">
+            <h3 class="card-title flex items-center gap-2"><i data-lucide="shield"></i> Identidad en Construcción</h3>
+          </div>
+          <div id="identity-list" class="flex-col gap-2">
+            <!-- Renderizado por JS -->
+          </div>
+        </section>
+
+        <!-- 4. ÁREAS DE VIDA -->
+        <section class="card mt-6">
+          <div class="card-header">
+            <h3 class="card-title flex items-center gap-2"><i data-lucide="activity"></i> Áreas de Vida</h3>
+          </div>
+          <div id="life-areas-list" class="flex-col gap-3">
+             <!-- Renderizado por JS -->
+          </div>
+        </section>
+
+        <!-- 8. TRACKER DE RESURRECCIÓN -->
+        <section class="card mt-6">
+          <div class="card-header">
+            <h3 class="card-title flex items-center gap-2"><i data-lucide="bar-chart-2"></i> Resurrección</h3>
+          </div>
+          <div class="text-small mb-2">Energía & Enfoque (Últimos 7 días)</div>
+          <div class="flex items-end gap-2 h-24 mt-4" id="resurrection-tracker">
+            <!-- Renderizado por JS -->
+          </div>
+          <div class="text-center text-small mt-2">"Estoy volviendo."</div>
+        </section>
+
+      </div>
+
+      <!-- COLUMNA CENTRAL (MAPA) -->
+      <div class="flex-col gap-6">
+        
+        <!-- 1. EL MAPA -->
+        <section class="card border-primary">
+          <div class="card-header">
+            <h3 class="card-title flex items-center gap-2 text-primary"><i data-lucide="crosshair"></i> El Mapa</h3>
+            <div class="text-small flex items-center gap-1"><i data-lucide="flame" class="text-accent-red" style="width:14px"></i> Racha: <span id="racha-counter">0</span> días</div>
+          </div>
+          <div class="mb-4 pb-4 border-b">
+            <div class="text-small">Misión Actual</div>
+            <div class="text-title">Recuperar disciplina. Aprobar finales. Reconstruir enfoque.</div>
+          </div>
+          <div class="flex gap-4 text-small">
+            <div class="flex-1">
+              <span class="text-muted block">Objetivo Mes</span>
+              <span>Dominar el 80% del temario</span>
+            </div>
+            <div class="flex-1">
+              <span class="text-muted block">Objetivo Semana</span>
+              <span>Cerrar unidad 3 y 4</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- 2. SISTEMA DE MISIONES -->
+        <section class="card mt-6">
+          <div class="card-header">
+            <h3 class="card-title flex items-center gap-2"><i data-lucide="target"></i> Misiones Activas</h3>
+            <button class="btn-icon"><i data-lucide="plus"></i></button>
+          </div>
+          <div id="missions-list">
+             <!-- Renderizado por JS -->
+          </div>
+        </section>
+
+        <!-- 3. MINI VICTORIAS -->
+        <section class="card mt-6">
+          <div class="card-header">
+            <h3 class="card-title flex items-center gap-2"><i data-lucide="flag"></i> Mini Victorias</h3>
+            <span class="text-small">Acumulando Dopamina</span>
+          </div>
+          <div id="mini-victories-list" class="flex flex-wrap gap-2">
+            <!-- Renderizado por JS -->
+          </div>
+        </section>
+
+      </div>
+
+      <!-- COLUMNA DERECHA -->
+      <div class="flex-col gap-6">
+        
+        <!-- 9. SISTEMA NO CERO -->
+        <section class="card card-dark">
+          <div class="card-header border-none pb-0 mb-2">
+            <h3 class="card-title flex items-center gap-2"><i data-lucide="battery"></i> Sistema No Cero</h3>
+          </div>
+          <p class="text-small text-muted mb-4">Regla máxima: Nunca un día completamente vacío. Los días en cero destruyen identidad.</p>
+          <button class="btn btn-outline w-full justify-between" id="btn-save-day">
+            <span>Salvar el día (10 min)</span>
+            <i data-lucide="check-circle" style="width:16px"></i>
+          </button>
+        </section>
+
+        <!-- ACCIONES RÁPIDAS -->
+        <section class="flex-col gap-3 mt-6">
+          <button class="btn btn-outline w-full justify-between py-4" id="btn-toggle-lab">
+            <span class="flex items-center gap-2"><i data-lucide="terminal"></i> Laboratorio de Ideas</span>
+            <i data-lucide="arrow-right" style="width:16px"></i>
+          </button>
+          <button class="btn btn-outline w-full justify-between py-4 border-red text-red" id="btn-enter-war">
+            <span class="flex items-center gap-2"><i data-lucide="sword"></i> Activar Modo Guerra</span>
+            <i data-lucide="zap" style="width:16px"></i>
+          </button>
+        </section>
+
+        <!-- 6. LABORATORIO -->
+        <div id="lab-section" class="card mt-2 hidden">
+          <div class="flex justify-between items-center mb-4">
+            <h3 class="card-title flex items-center gap-2"><i data-lucide="brain"></i> Descarga Mental</h3>
+            <div class="flex gap-2">
+              <button id="btn-mode-text" class="btn-icon active"><i data-lucide="type" style="width:16px"></i></button>
+              <button id="btn-mode-draw" class="btn-icon"><i data-lucide="pen-tool" style="width:16px"></i></button>
+            </div>
+          </div>
+
+          <!-- Modo Texto -->
+          <div id="lab-text-container">
+            <textarea id="lab-textarea" class="w-full textarea text-small font-mono" rows="6" placeholder="Ideas de negocios, apps, proyectos, frases, pensamientos..."></textarea>
+            <button class="btn btn-primary w-full mt-3 text-small" id="btn-save-lab">Guardar en el Laboratorio</button>
+          </div>
+
+          <!-- Modo Dibujo -->
+          <div id="lab-draw-container" class="hidden">
+            <div class="canvas-container mb-2">
+              <canvas id="lab-canvas"></canvas>
+            </div>
+            <div class="flex gap-2">
+              <button class="btn btn-outline flex-1 text-small" id="btn-clear-canvas"><i data-lucide="trash-2" style="width:14px"></i> Limpiar</button>
+              <button class="btn btn-primary flex-1 text-small" id="btn-save-draw"><i data-lucide="download" style="width:14px"></i> Guardar Imagen</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 5. MODO GUERRA -->
+  <div id="war-mode" class="war-mode hidden">
+    <button id="btn-exit-war" class="absolute top-8 right-8 text-muted hover-white"><i data-lucide="x" style="width:32px; height:32px;"></i></button>
+    <div class="war-mode-content">
+      <div class="text-accent-red text-small font-bold mb-4 flex items-center justify-center gap-2">
+        <i data-lucide="sword" style="width:16px"></i> MODO GUERRA ACTIVADO
+      </div>
+      <h1 class="text-huge text-white mb-8">HOY GANAR SIGNIFICA NO ABANDONAR</h1>
+      <div id="war-timer" class="war-timer font-mono">25:00</div>
+      
+      <div class="card war-card mx-auto mt-8">
+        <h3 class="card-title mb-4 text-white">Objetivos Mínimos Viables</h3>
+        <div class="flex-col gap-3" id="war-objectives">
+          <!-- Renderizado por JS -->
+        </div>
+      </div>
+
+      <button id="btn-start-war" class="btn btn-danger mt-8 px-8 py-4 flex items-center gap-2 mx-auto">
+        <i data-lucide="play" style="width:20px"></i> Empezar a Luchar
+      </button>
+    </div>
+  </div>
+
+  <!-- Firebase Scripts (Modular Módulos ES) -->
+  <script type="module" src="app.js"></script>
+</body>
 </html>
