@@ -13,14 +13,14 @@
 <body>
 
   <!-- MOBILE HEADER -->
-  <header class="mobile-header flex items-center justify-between px-4 py-3 fixed top-0 w-full z-40 bg-surface border-b lg:hidden">
+  <header class="mobile-header flex items-center justify-between px-4 py-3 fixed top-0 w-full z-40 bg-surface border-b">
     <div class="flex items-center gap-2">
+      <button id="btn-toggle-sidebar-all" class="btn-icon">
+        <i data-lucide="menu"></i>
+      </button>
       <i data-lucide="shield" class="text-primary"></i>
       <span class="font-bold text-small">Volver a Sentir</span>
     </div>
-    <button id="btn-toggle-sidebar" class="btn-icon">
-      <i data-lucide="menu"></i>
-    </button>
   </header>
 
   <!-- SIDEBAR -->
@@ -49,7 +49,7 @@
   </aside>
 
   <!-- CONTENT -->
-  <div class="container lg:ml-64 pt-20 lg:pt-8">
+  <div class="container sidebar-open-padding pt-20 lg:pt-8" id="main-container">
     <header class="mb-8">
       <h1 class="text-huge">SISTEMA DE MISIONES</h1>
       <p class="text-muted">No tareas. Misiones estratétegicas para tu progreso real.</p>
