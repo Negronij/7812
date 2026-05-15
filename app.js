@@ -108,18 +108,18 @@ onValue(userRef, (snapshot) => {
 
 // --- RENDER FUNCTIONS ---
 function renderDashboard(data) {
-  loadingScreen.classList.add('hidden');
-  dashboard.classList.remove('hidden');
+  if (loadingScreen) loadingScreen.classList.add('hidden');
+  if (dashboard) dashboard.classList.remove('hidden');
 
-  rachaCounter.innerText = data.racha || 0;
-  labTextarea.value = data.labNotes || "";
+  if (rachaCounter) rachaCounter.innerText = data.racha || 0;
+  if (labTextarea) labTextarea.value = data.labNotes || "";
 
-  renderIdentity(data.identity || DEFAULT_DATA.identity);
-  renderLifeAreas(data.lifeAreas || {});
-  renderResurrection(data.resurrection || DEFAULT_DATA.resurrection);
-  renderMissions(data.missions || {});
-  renderMiniVictories(data.miniVictories || {});
-  renderWarObjectives(data.warObjectives || [
+  if (identityList) renderIdentity(data.identity || DEFAULT_DATA.identity);
+  if (lifeAreasList) renderLifeAreas(data.lifeAreas || {});
+  if (resurrectionTracker) renderResurrection(data.resurrection || DEFAULT_DATA.resurrection);
+  if (missionsList) renderMissions(data.missions || {});
+  if (miniVictoriesList) renderMiniVictories(data.miniVictories || {});
+  if (warObjectives) renderWarObjectives(data.warObjectives || [
     { id: 'w1', text: "Bañarse", done: false },
     { id: 'w2', text: "Estudiar 25 minutos", done: false },
     { id: 'w3', text: "Salir de la cama mentalmente", done: false }
@@ -130,6 +130,7 @@ function renderDashboard(data) {
 }
 
 function renderIdentity(identityArr) {
+  if (!identityList) return;
   identityList.innerHTML = identityArr.map(item => `
     <div class="flex items-center gap-2 p-2 rounded ${item.active ? 'bg-elevated' : ''}" style="background-color: ${item.active ? 'var(--bg-elevated)' : 'transparent'}">
       <div class="w-2 h-2 rounded-full" style="background-color: ${item.active ? 'var(--text-primary)' : 'var(--border-color)'}; width: 8px; height: 8px;"></div>
@@ -139,6 +140,7 @@ function renderIdentity(identityArr) {
 }
 
 function renderLifeAreas(areasObj) {
+  if (!lifeAreasList) return;
   lifeAreasList.innerHTML = Object.entries(areasObj).map(([id, area]) => `
     <div>
       <div class="flex justify-between text-small mb-1">
@@ -153,6 +155,7 @@ function renderLifeAreas(areasObj) {
 }
 
 function renderResurrection(arr) {
+  if (!resurrectionTracker) return;
   resurrectionTracker.innerHTML = arr.map(val => `
     <div class="flex-col justify-end h-full flex-1 gap-1 flex" style="height: 100%">
       <div class="w-full rounded-t-sm" style="height: ${val}%; background-color: ${val > 70 ? 'var(--text-primary)' : 'var(--text-muted)'}"></div>
@@ -161,6 +164,7 @@ function renderResurrection(arr) {
 }
 
 function renderMissions(missionsObj) {
+  if (!missionsList) return;
   missionsList.innerHTML = Object.entries(missionsObj).map(([id, mission]) => `
     <div class="mission-item cursor-pointer" onclick="window.toggleMission('${id}', ${mission.done})">
       <div class="mission-checkbox ${mission.done ? 'checked' : ''}">
@@ -179,6 +183,7 @@ function renderMissions(missionsObj) {
 }
 
 function renderMiniVictories(victoriesObj) {
+  if (!miniVictoriesList) return;
   miniVictoriesList.innerHTML = Object.entries(victoriesObj).map(([id, victory]) => `
     <div onclick="window.toggleVictory('${id}', ${victory.done})" 
          class="flex items-center gap-2 px-3 py-1 rounded-full border cursor-pointer text-small"
@@ -192,6 +197,7 @@ function renderMiniVictories(victoriesObj) {
 }
 
 function renderWarObjectives(arr) {
+  if (!warObjectives) return;
   warObjectives.innerHTML = arr.map((obj, index) => `
     <div class="flex items-center gap-3 p-3 rounded border cursor-pointer"
          onclick="window.toggleWarObj(${index})"
@@ -297,45 +303,38 @@ btnSaveDraw.addEventListener('click', () => {
 });
 
 // --- SIDEBAR & NAVIGATION ---
-btnToggleSidebar.addEventListener('click', () => {
+if (btnToggleSidebar) btnToggleSidebar.addEventListener('click', () => {
   sidebar.classList.remove('-translate-x-full');
 });
 
-btnCloseSidebar.addEventListener('click', () => {
+if (btnCloseSidebar) btnCloseSidebar.addEventListener('click', () => {
   sidebar.classList.add('-translate-x-full');
 });
 
-btnSidebarWar.addEventListener('click', () => {
+if (btnSidebarWar) btnSidebarWar.addEventListener('click', () => {
   warMode.classList.add('active');
   sidebar.classList.add('-translate-x-full');
 });
 
 navItems.forEach(item => {
   item.addEventListener('click', () => {
-    const section = item.getAttribute('data-section');
-    if (section) {
-      // Scroll to section or handle visibility
-      const targetSection = document.querySelector(`[data-lucide="${section === 'dashboard' ? 'layout-dashboard' : section}"]`)?.closest('.card');
-      if (targetSection) {
-        targetSection.scrollIntoView({ behavior: 'smooth' });
-      }
-    }
-    navItems.forEach(i => i.classList.remove('active'));
-    item.classList.add('active');
+    // Si es un enlace real (a), el navegador navegará solo.
+    // Si es un botón, manejamos el sidebar.
     sidebar.classList.add('-translate-x-full');
   });
 });
 
 // --- GEMINI LOGIC ---
-btnGeminiToggle.addEventListener('click', () => {
+if (btnGeminiToggle) btnGeminiToggle.addEventListener('click', () => {
   geminiChat.classList.toggle('hidden');
 });
 
-btnCloseGemini.addEventListener('click', () => {
+if (btnCloseGemini) btnCloseGemini.addEventListener('click', () => {
   geminiChat.classList.add('hidden');
 });
 
 function addChatMessage(role, text) {
+  if (!chatMessages) return;
   const msg = document.createElement('div');
   msg.className = `msg ${role}`;
   msg.innerText = text;
@@ -343,7 +342,7 @@ function addChatMessage(role, text) {
   chatMessages.scrollTop = chatMessages.scrollHeight;
 }
 
-btnChatSend.addEventListener('click', () => {
+if (btnChatSend) btnChatSend.addEventListener('click', () => {
   const text = chatInput.value.trim();
   if (!text) return;
   
@@ -363,20 +362,21 @@ btnChatSend.addEventListener('click', () => {
   }, 1000);
 });
 
-chatInput.addEventListener('keypress', (e) => {
+if (chatInput) chatInput.addEventListener('keypress', (e) => {
   if (e.key === 'Enter') btnChatSend.click();
 });
 
-btnToggleLab.addEventListener('click', () => {
+if (btnToggleLab) btnToggleLab.addEventListener('click', () => {
   labSection.classList.toggle('hidden');
 });
 
-btnSaveLab.addEventListener('click', () => {
+if (btnSaveLab) btnSaveLab.addEventListener('click', () => {
   set(ref(db, `users/juan/labNotes`), labTextarea.value);
-  labSection.classList.add('hidden');
+  if (labSection) labSection.classList.add('hidden');
 });
 
-document.getElementById('btn-save-day').addEventListener('click', () => {
+const btnSaveDay = document.getElementById('btn-save-day');
+if (btnSaveDay) btnSaveDay.addEventListener('click', () => {
   alert('¡Día salvado! ✅ Nunca permitas un día en cero.');
 });
 
