@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Modo Guerra - Volver a Sentir</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-base overflow-hidden">
+
+  <div id="war-mode" class="war-mode active">
+    <a href="index.html" class="absolute top-8 right-8 text-muted hover-white"><i data-lucide="x" style="width:32px; height:32px;"></i></a>
+    <div class="war-mode-content">
+      <div class="text-accent-red text-small font-bold mb-4 flex items-center justify-center gap-2">
+        <i data-lucide="sword" style="width:16px"></i> MODO GUERRA ACTIVADO
+      </div>
+      <h1 class="text-huge text-white mb-8">HOY GANAR SIGNIFICA NO ABANDONAR</h1>
+      <div id="war-timer" class="war-timer font-mono">25:00</div>
+      
+      <div class="card war-card mx-auto mt-8">
+        <h3 class="card-title mb-4 text-white">Objetivos Mínimos Viables</h3>
+        <div class="flex-col gap-3" id="war-objectives">
+          <!-- Renderizado por JS -->
+        </div>
+      </div>
+
+      <button id="btn-start-war" class="btn btn-danger mt-8 px-8 py-4 flex items-center gap-2 mx-auto">
+        <i data-lucide="play" style="width:20px"></i> Empezar a Luchar
+      </button>
+    </div>
+  </div>
+
+  <div id="loading" class="flex items-center justify-center h-screen w-full fixed top-0 left-0 bg-base z-50"><i data-lucide="loader-2" class="spin text-muted" style="width: 48px; height: 48px;"></i></div>
+  <script type="module" src="app.js"></script>
+</body>
+</html>
