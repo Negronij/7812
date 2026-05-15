@@ -73,8 +73,8 @@ const ctx = labCanvas ? labCanvas.getContext('2d') : null;
 // Sidebar & Gemini
 const sidebar = document.getElementById('sidebar');
 const btnToggleSidebarAll = document.getElementById('btn-toggle-sidebar-all');
+const btnCollapseSidebar = document.getElementById('btn-collapse-sidebar');
 const mainContainer = document.getElementById('main-container');
-const btnCloseSidebar = document.getElementById('btn-close-sidebar');
 const btnGeminiToggle = document.getElementById('btn-gemini-toggle');
 const geminiChat = document.getElementById('gemini-chat');
 const btnCloseGemini = document.getElementById('btn-close-gemini');
@@ -346,17 +346,31 @@ btnSaveDraw.addEventListener('click', () => {
 });
 
 // --- SIDEBAR & NAVIGATION ---
-if (btnToggleSidebarAll) btnToggleSidebarAll.addEventListener('click', () => {
-  const isCollapsed = sidebar.classList.toggle('collapsed');
-  if (mainContainer) {
-    mainContainer.classList.toggle('sidebar-open-padding', !isCollapsed);
-    mainContainer.classList.toggle('sidebar-collapsed-padding', isCollapsed);
+function toggleSidebar(forceCollapse) {
+  const isCollapsed = forceCollapse !== undefined ? forceCollapse : !sidebar.classList.contains('collapsed');
+  
+  if (isCollapsed) {
+    sidebar.classList.add('collapsed');
+    if (mainContainer) {
+      mainContainer.classList.remove('sidebar-open-padding');
+      mainContainer.classList.add('sidebar-collapsed-padding');
+    }
+  } else {
+    sidebar.classList.remove('collapsed');
+    if (mainContainer) {
+      mainContainer.classList.add('sidebar-open-padding');
+      mainContainer.classList.remove('sidebar-collapsed-padding');
+    }
   }
-});
+  localStorage.setItem('sidebar-collapsed', isCollapsed);
+}
 
-if (btnCloseSidebar) btnCloseSidebar.addEventListener('click', () => {
-  sidebar.classList.add('-translate-x-full');
-});
+if (btnToggleSidebarAll) btnToggleSidebarAll.addEventListener('click', () => toggleSidebar());
+if (btnCollapseSidebar) btnCollapseSidebar.addEventListener('click', () => toggleSidebar(true));
+
+// Restore sidebar state
+const savedSidebarState = localStorage.getItem('sidebar-collapsed') === 'true';
+toggleSidebar(savedSidebarState);
 
 if (btnSidebarWar) btnSidebarWar.addEventListener('click', () => {
   warMode.classList.add('active');
