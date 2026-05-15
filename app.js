@@ -61,6 +61,14 @@ const labSection = document.getElementById('lab-section');
 const btnToggleLab = document.getElementById('btn-toggle-lab');
 const labTextarea = document.getElementById('lab-textarea');
 const btnSaveLab = document.getElementById('btn-save-lab');
+const btnModeText = document.getElementById('btn-mode-text');
+const btnModeDraw = document.getElementById('btn-mode-draw');
+const labTextContainer = document.getElementById('lab-text-container');
+const labDrawContainer = document.getElementById('lab-draw-container');
+const labCanvas = document.getElementById('lab-canvas');
+const btnClearCanvas = document.getElementById('btn-clear-canvas');
+const btnSaveDraw = document.getElementById('btn-save-draw');
+const ctx = labCanvas.getContext('2d');
 
 // War Mode
 const warMode = document.getElementById('war-mode');
@@ -206,6 +214,75 @@ window.toggleWarObj = (index) => {
 };
 
 // --- EVENT LISTENERS ---
+btnModeText.addEventListener('click', () => {
+  btnModeText.classList.add('active');
+  btnModeDraw.classList.remove('active');
+  labTextContainer.classList.remove('hidden');
+  labDrawContainer.classList.add('hidden');
+});
+
+btnModeDraw.addEventListener('click', () => {
+  btnModeDraw.classList.add('active');
+  btnModeText.classList.remove('active');
+  labDrawContainer.classList.remove('hidden');
+  labTextContainer.classList.add('hidden');
+  resizeCanvas();
+});
+
+// Drawing Logic
+let drawing = false;
+
+function resizeCanvas() {
+  const container = labCanvas.parentElement;
+  labCanvas.width = container.clientWidth;
+  labCanvas.height = container.clientHeight;
+  ctx.strokeStyle = '#ffffff';
+  ctx.lineWidth = 2;
+  ctx.lineCap = 'round';
+}
+
+function startDrawing(e) {
+  drawing = true;
+  draw(e);
+}
+
+function stopDrawing() {
+  drawing = false;
+  ctx.beginPath();
+}
+
+function draw(e) {
+  if (!drawing) return;
+  
+  const rect = labCanvas.getBoundingClientRect();
+  const x = (e.clientX || (e.touches && e.touches[0].clientX)) - rect.left;
+  const y = (e.clientY || (e.touches && e.touches[0].clientY)) - rect.top;
+
+  ctx.lineTo(x, y);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(x, y);
+}
+
+labCanvas.addEventListener('mousedown', startDrawing);
+labCanvas.addEventListener('mousemove', draw);
+window.addEventListener('mouseup', stopDrawing);
+
+labCanvas.addEventListener('touchstart', (e) => { e.preventDefault(); startDrawing(e); });
+labCanvas.addEventListener('touchmove', (e) => { e.preventDefault(); draw(e); });
+labCanvas.addEventListener('touchend', stopDrawing);
+
+btnClearCanvas.addEventListener('click', () => {
+  ctx.clearRect(0, 0, labCanvas.width, labCanvas.height);
+});
+
+btnSaveDraw.addEventListener('click', () => {
+  const link = document.createElement('a');
+  link.download = `idea-${Date.now()}.png`;
+  link.href = labCanvas.toDataURL();
+  link.click();
+});
+
 btnToggleLab.addEventListener('click', () => {
   labSection.classList.toggle('hidden');
 });
