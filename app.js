@@ -70,6 +70,19 @@ const btnClearCanvas = document.getElementById('btn-clear-canvas');
 const btnSaveDraw = document.getElementById('btn-save-draw');
 const ctx = labCanvas.getContext('2d');
 
+// Sidebar & Gemini
+const sidebar = document.getElementById('sidebar');
+const btnToggleSidebar = document.getElementById('btn-toggle-sidebar');
+const btnCloseSidebar = document.getElementById('btn-close-sidebar');
+const btnGeminiToggle = document.getElementById('btn-gemini-toggle');
+const geminiChat = document.getElementById('gemini-chat');
+const btnCloseGemini = document.getElementById('btn-close-gemini');
+const chatInput = document.getElementById('chat-input');
+const btnChatSend = document.getElementById('btn-chat-send');
+const chatMessages = document.getElementById('chat-messages');
+const btnSidebarWar = document.getElementById('btn-sidebar-war');
+const navItems = document.querySelectorAll('.nav-item');
+
 // War Mode
 const warMode = document.getElementById('war-mode');
 const btnEnterWar = document.getElementById('btn-enter-war');
@@ -281,6 +294,77 @@ btnSaveDraw.addEventListener('click', () => {
   link.download = `idea-${Date.now()}.png`;
   link.href = labCanvas.toDataURL();
   link.click();
+});
+
+// --- SIDEBAR & NAVIGATION ---
+btnToggleSidebar.addEventListener('click', () => {
+  sidebar.classList.remove('-translate-x-full');
+});
+
+btnCloseSidebar.addEventListener('click', () => {
+  sidebar.classList.add('-translate-x-full');
+});
+
+btnSidebarWar.addEventListener('click', () => {
+  warMode.classList.add('active');
+  sidebar.classList.add('-translate-x-full');
+});
+
+navItems.forEach(item => {
+  item.addEventListener('click', () => {
+    const section = item.getAttribute('data-section');
+    if (section) {
+      // Scroll to section or handle visibility
+      const targetSection = document.querySelector(`[data-lucide="${section === 'dashboard' ? 'layout-dashboard' : section}"]`)?.closest('.card');
+      if (targetSection) {
+        targetSection.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+    navItems.forEach(i => i.classList.remove('active'));
+    item.classList.add('active');
+    sidebar.classList.add('-translate-x-full');
+  });
+});
+
+// --- GEMINI LOGIC ---
+btnGeminiToggle.addEventListener('click', () => {
+  geminiChat.classList.toggle('hidden');
+});
+
+btnCloseGemini.addEventListener('click', () => {
+  geminiChat.classList.add('hidden');
+});
+
+function addChatMessage(role, text) {
+  const msg = document.createElement('div');
+  msg.className = `msg ${role}`;
+  msg.innerText = text;
+  chatMessages.appendChild(msg);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+btnChatSend.addEventListener('click', () => {
+  const text = chatInput.value.trim();
+  if (!text) return;
+  
+  addChatMessage('user', text);
+  chatInput.value = '';
+  
+  // Simulate Gemini Response
+  setTimeout(() => {
+    const responses = [
+      "Entendido. He analizado tus misiones. Recomiendo priorizar 'Simulacro Final' para maximizar tu impacto hoy.",
+      "Tu racha de 4 días es excelente. Sigue así para fortalecer tu identidad estratégica.",
+      "He registrado tu idea en el laboratorio. ¿Quieres que profundice en el plan de acción?",
+      "Recuerda la regla No Cero: incluso 10 minutos de estudio hoy cuentan para tu progreso anual."
+    ];
+    const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+    addChatMessage('bot', randomResponse);
+  }, 1000);
+});
+
+chatInput.addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') btnChatSend.click();
 });
 
 btnToggleLab.addEventListener('click', () => {
