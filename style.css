@@ -94,8 +94,98 @@ button {
 }
 @media (min-width: 1024px) {
   .grid-dashboard {
-    grid-template-columns: 350px 1fr 350px;
+    grid-template-columns: 1fr 1fr;
   }
+  .lg\:ml-64 { margin-left: 16rem; }
+  .lg\:pt-8 { padding-top: 2rem; }
+  .lg\:hidden { display: none !important; }
+  .lg\:translate-x-0 { transform: translateX(0) !important; }
+}
+
+/* Sidebar */
+.sidebar {
+  width: 260px;
+  background-color: var(--bg-surface);
+  box-shadow: 10px 0 30px rgba(0,0,0,0.5);
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.85rem 1.25rem;
+  border-radius: 8px;
+  color: var(--text-secondary);
+  font-weight: 500;
+  font-size: 0.95rem;
+  transition: all var(--transition-fast);
+  text-align: left;
+}
+
+.nav-item:hover, .nav-item.active {
+  background-color: var(--bg-elevated);
+  color: var(--text-primary);
+}
+
+.nav-item i {
+  width: 18px;
+  height: 18px;
+}
+
+/* Gemini Panel */
+.btn-gemini {
+  background: linear-gradient(135deg, #4285f4 0%, #9b72cb 100%);
+  color: white;
+  padding: 0.85rem 1.5rem;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn-gemini:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 25px rgba(66, 133, 244, 0.4);
+}
+
+.gemini-chat {
+  width: 350px;
+  max-width: 90vw;
+  position: absolute;
+  bottom: 80px;
+  right: 0;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  overflow: hidden;
+}
+
+.chat-messages {
+  background-color: var(--bg-base);
+}
+
+.msg {
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  max-width: 85%;
+}
+
+.msg.bot {
+  background-color: var(--bg-elevated);
+  color: var(--text-primary);
+  align-self: flex-start;
+  border-bottom-left-radius: 2px;
+}
+
+.msg.user {
+  background-color: #4285f4;
+  color: white;
+  align-self: flex-end;
+  border-bottom-right-radius: 2px;
 }
 
 /* Components */
