@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Áreas de Vida - Volver a Sentir</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+
+  <header class="mobile-header flex items-center justify-between px-4 py-3 fixed top-0 w-full z-40 bg-surface border-b lg:hidden">
+    <div class="flex items-center gap-2"><i data-lucide="shield" class="text-primary"></i><span class="font-bold text-small">Volver a Sentir</span></div>
+    <button id="btn-toggle-sidebar" class="btn-icon"><i data-lucide="menu"></i></button>
+  </header>
+
+  <aside id="sidebar" class="sidebar fixed top-0 left-0 h-screen z-50 bg-surface border-r transition-all duration-300 transform -translate-x-full lg:translate-x-0 w-64 flex flex-col">
+    <div class="p-6 border-b flex items-center justify-between">
+      <div class="flex items-center gap-2"><i data-lucide="shield" class="text-primary" style="width:24px"></i><span class="font-bold text-title">SISTEMA</span></div>
+      <button id="btn-close-sidebar" class="btn-icon lg:hidden"><i data-lucide="x"></i></button>
+    </div>
+    <nav class="flex-1 overflow-y-auto p-4 flex flex-col gap-2">
+      <a href="index.html" class="nav-item"><i data-lucide="layout-dashboard"></i> El Mapa</a>
+      <a href="missions.html" class="nav-item"><i data-lucide="target"></i> Misiones</a>
+      <a href="victories.html" class="nav-item"><i data-lucide="flag"></i> Mini Victorias</a>
+      <a href="areas.html" class="nav-item active"><i data-lucide="activity"></i> Áreas de Vida</a>
+      <a href="identity.html" class="nav-item"><i data-lucide="user"></i> Identidad</a>
+      <a href="lab.html" class="nav-item"><i data-lucide="brain"></i> Laboratorio</a>
+      <a href="resurrection.html" class="nav-item"><i data-lucide="bar-chart-2"></i> Resurrección</a>
+      <div class="mt-auto pt-4 border-t border-border-color"><a href="war.html" class="nav-item text-red"><i data-lucide="sword"></i> Modo Guerra</a></div>
+    </nav>
+  </aside>
+
+  <div class="container lg:ml-64 pt-20 lg:pt-8">
+    <header class="mb-8">
+      <h1 class="text-huge">ÁREAS DE VIDA</h1>
+      <p class="text-muted">El éxito es equilibrio. Monitorea cada pilar de tu resurrección.</p>
+    </header>
+
+    <div class="grid-dashboard" style="grid-template-columns: 1fr;">
+      <section class="card max-w-2xl">
+        <div class="card-header">
+          <h3 class="card-title flex items-center gap-2"><i data-lucide="activity"></i> Estado de los Pilares</h3>
+        </div>
+        <div id="life-areas-list" class="flex-col gap-6 py-4">
+          <!-- Renderizado por JS -->
+        </div>
+      </section>
+
+      <div class="grid lg:grid-cols-2 gap-6 max-w-4xl mt-6">
+        <div class="card">
+          <h4 class="text-title mb-2">Cuerpo</h4>
+          <p class="text-small text-muted">Entrenamiento, nutrición y descanso. Es tu vehículo de guerra.</p>
+        </div>
+        <div class="card">
+          <h4 class="text-title mb-2">Mente</h4>
+          <p class="text-small text-muted">Lectura, meditación y aprendizaje constante.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="gemini-panel" class="gemini-panel fixed bottom-6 right-6 z-40">
+    <button id="btn-gemini-toggle" class="btn-gemini shadow-lg"><i data-lucide="sparkles"></i><span>Asistente AI</span></button>
+    <div id="gemini-chat" class="gemini-chat hidden card shadow-xl">
+      <div class="card-header flex justify-between items-center">
+        <h3 class="card-title flex items-center gap-2"><i data-lucide="sparkles"></i> Gemini AI</h3>
+        <button id="btn-close-gemini" class="btn-icon"><i data-lucide="x"></i></button>
+      </div>
+      <div id="chat-messages" class="chat-messages p-4 flex flex-col gap-3 overflow-y-auto h-80"></div>
+      <div class="p-3 border-t"><div class="flex gap-2">
+        <input type="text" id="chat-input" class="textarea flex-1 text-small" placeholder="Preguntar a Gemini...">
+        <button id="btn-chat-send" class="btn btn-primary"><i data-lucide="send" style="width:16px"></i></button>
+      </div></div>
+    </div>
+  </div>
+
+  <div id="loading" class="flex items-center justify-center h-screen w-full fixed top-0 left-0 bg-base z-50"><i data-lucide="loader-2" class="spin text-muted" style="width: 48px; height: 48px;"></i></div>
+  <script type="module" src="app.js"></script>
+</body>
+</html>
