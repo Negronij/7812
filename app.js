@@ -264,7 +264,11 @@ function resizeCanvas() {
 
 function applyDrawingSettings() {
   if (!ctx) return;
-  ctx.strokeStyle = currentTool === 'eraser' ? 'var(--bg-elevated)' : currentColor;
+  
+  // Get the background color of the canvas container for the eraser
+  const bgColor = window.getComputedStyle(labCanvas.parentElement).backgroundColor;
+  
+  ctx.strokeStyle = currentTool === 'eraser' ? bgColor : currentColor;
   ctx.lineWidth = currentTool === 'eraser' ? 40 : 3;
   ctx.lineCap = 'round';
   ctx.lineJoin = 'round';
@@ -368,9 +372,10 @@ function toggleSidebar(forceCollapse) {
 if (btnToggleSidebarAll) btnToggleSidebarAll.addEventListener('click', () => toggleSidebar());
 if (btnCollapseSidebar) btnCollapseSidebar.addEventListener('click', () => toggleSidebar(true));
 
-// Restore sidebar state
-const savedSidebarState = localStorage.getItem('sidebar-collapsed') === 'true';
-toggleSidebar(savedSidebarState);
+// Restore sidebar state - Start CLOSED by default if no state saved
+const savedSidebarState = localStorage.getItem('sidebar-collapsed');
+const initialState = savedSidebarState === null ? true : savedSidebarState === 'true';
+toggleSidebar(initialState);
 
 if (btnSidebarWar) btnSidebarWar.addEventListener('click', () => {
   warMode.classList.add('active');
