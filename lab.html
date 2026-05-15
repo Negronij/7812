@@ -13,8 +13,12 @@
 <body>
 
   <header class="mobile-header flex items-center justify-between px-4 py-3 fixed top-0 w-full z-40 bg-surface border-b lg:hidden">
-    <div class="flex items-center gap-2"><i data-lucide="shield" class="text-primary"></i><span class="font-bold text-small">Volver a Sentir</span></div>
-    <button id="btn-toggle-sidebar" class="btn-icon"><i data-lucide="menu"></i></button>
+    <div class="flex items-center gap-2">
+      <button id="btn-toggle-sidebar-all" class="btn-icon">
+        <i data-lucide="menu"></i>
+      </button>
+      <i data-lucide="shield" class="text-primary"></i><span class="font-bold text-small">Volver a Sentir</span>
+    </div>
   </header>
 
   <aside id="sidebar" class="sidebar fixed top-0 left-0 h-screen z-50 bg-surface border-r transition-all duration-300 transform -translate-x-full lg:translate-x-0 w-64 flex flex-col">
@@ -34,7 +38,7 @@
     </nav>
   </aside>
 
-  <div class="container lg:ml-64 pt-20 lg:pt-8">
+  <div class="container sidebar-open-padding pt-20 lg:pt-8" id="main-container">
     <header class="mb-8">
       <h1 class="text-huge">LABORATORIO DE IDEAS</h1>
       <p class="text-muted">Descarga tu energía mental. Dibuja o escribe sin filtros.</p>
@@ -50,10 +54,23 @@
           </div>
         </div>
         <div id="lab-text-container">
-          <textarea id="lab-textarea" class="w-full textarea text-small font-mono" rows="12" placeholder="Tira tus ideas aquí..."></textarea>
+          <textarea id="lab-textarea" class="w-full textarea text-small font-mono" rows="10" placeholder="Tira tus ideas aquí..." oninput="this.style.height = ''; this.style.height = this.scrollHeight + 'px'"></textarea>
           <button class="btn btn-primary w-full mt-3" id="btn-save-lab">Guardar en el Laboratorio</button>
         </div>
         <div id="lab-draw-container" class="hidden">
+          <div class="flex items-center justify-between mb-3 px-2">
+            <div class="flex gap-2">
+              <button class="tool-btn active" id="btn-tool-pen" title="Lápiz"><i data-lucide="pen"></i></button>
+              <button class="tool-btn" id="btn-tool-eraser" title="Goma de borrar"><i data-lucide="eraser"></i></button>
+            </div>
+            <div class="flex gap-2" id="color-palette">
+              <div class="color-btn active" style="background: #ffffff;" data-color="#ffffff"></div>
+              <div class="color-btn" style="background: #4285f4;" data-color="#4285f4"></div>
+              <div class="color-btn" style="background: #ea4335;" data-color="#ea4335"></div>
+              <div class="color-btn" style="background: #fbbc05;" data-color="#fbbc05"></div>
+              <div class="color-btn" style="background: #34a853;" data-color="#34a853"></div>
+            </div>
+          </div>
           <div class="canvas-container mb-2" style="height: 500px;"><canvas id="lab-canvas"></canvas></div>
           <div class="flex gap-2">
             <button class="btn btn-outline flex-1" id="btn-clear-canvas"><i data-lucide="trash-2" style="width:14px"></i> Limpiar</button>
