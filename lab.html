@@ -60,8 +60,12 @@
         <div id="lab-draw-container" class="hidden">
           <div class="flex items-center justify-between mb-3 px-2">
             <div class="flex gap-2">
-              <button class="tool-btn active" id="btn-tool-pen" title="Lápiz"><i data-lucide="pen"></i></button>
-              <button class="tool-btn" id="btn-tool-eraser" title="Goma de borrar"><i data-lucide="eraser"></i></button>
+              <button class="tool-btn active flex items-center gap-2" id="btn-tool-pen" title="Lápiz">
+                <i data-lucide="pen" style="width:14px"></i> <span>Escribir</span>
+              </button>
+              <button class="tool-btn flex items-center gap-2" id="btn-tool-eraser" title="Goma de borrar">
+                <i data-lucide="eraser" style="width:14px"></i> <span>Borrar</span>
+              </button>
             </div>
             <div class="flex gap-2" id="color-palette">
               <div class="color-btn active" style="background: #ffffff;" data-color="#ffffff"></div>
