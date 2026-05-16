@@ -339,26 +339,27 @@ function renderMiniVictories(victoriesObj) {
   
   const dateStr = selectedDate.toISOString().split('T')[0];
   const dailyVictories = victoriesObj[dateStr] || {};
-  const isPast = selectedDate < new Date().setHours(0,0,0,0);
+  const today = new Date(); today.setHours(0,0,0,0);
+  const isToday = selectedDate.getTime() === today.getTime();
 
   miniVictoriesList.innerHTML = Object.entries(dailyVictories).map(([id, victory]) => `
     <div class="flex items-center gap-2 group">
       <div onclick="window.toggleVictory('${id}', ${victory.done})" 
-           class="flex items-center gap-2 px-3 py-1 rounded-full border cursor-pointer text-small transition-all"
+           class="flex items-center gap-2 px-3 py-1 rounded-full border cursor-pointer text-small transition-all ${!isToday ? 'opacity-80 cursor-default' : ''}"
            style="border-color: ${victory.done ? 'var(--text-primary)' : 'var(--border-color)'}; 
                   color: ${victory.done ? 'var(--bg-base)' : 'var(--text-secondary)'}; 
                   background-color: ${victory.done ? 'var(--text-primary)' : 'transparent'}">
         ${victory.done ? '<i data-lucide="check" style="width:12px"></i>' : ''}
         <span>${victory.text}</span>
-        <span class="opacity-40 text-[10px] ml-1">${victory.impact || 'Medio'}</span>
+        <span class="opacity-40 text-[10px] ml-1">${victory.impact || 'Media'}</span>
       </div>
-      ${!isPast ? `
+      ${isToday ? `
         <button onclick="window.deleteVictory('${id}')" class="btn-icon text-muted opacity-0 group-hover:opacity-100 transition-opacity p-1">
           <i data-lucide="trash-2" style="width:14px"></i>
         </button>
       ` : ''}
     </div>
-  `).join('') || '<p class="text-small text-muted py-2">Sin victorias registradas para este día.</p>';
+  `).join('') || `<p class="text-small text-muted py-2">${isToday ? 'Sin victorias registradas para hoy.' : 'No se registraron victorias este día.'}</p>`;
 }
 
 function renderWarObjectives(arr) {
@@ -421,7 +422,7 @@ window.toggleVictory = (id, currentDone) => {
   if (!userRef) return;
   const today = new Date().setHours(0,0,0,0);
   if (selectedDate.getTime() !== today) {
-    alert("Las victorias solo pueden marcarse el mismo día.");
+    alert("Solo puedes marcar victorias del día de hoy.");
     return;
   }
   const dateStr = selectedDate.toISOString().split('T')[0];
@@ -432,7 +433,7 @@ window.deleteVictory = (id) => {
   if (!userRef) return;
   const today = new Date().setHours(0,0,0,0);
   if (selectedDate.getTime() !== today) {
-    alert("No puedes eliminar victorias de días pasados o futuros.");
+    alert("Solo puedes eliminar victorias del día de hoy.");
     return;
   }
   if (!confirm("¿Seguro que quieres eliminar esta victoria?")) return;
@@ -444,7 +445,7 @@ window.addVictory = () => {
   if (!userRef) return;
   const today = new Date().setHours(0,0,0,0);
   if (selectedDate.getTime() !== today) {
-    alert("Las victorias solo pueden registrarse el mismo día.");
+    alert("Solo puedes añadir victorias para el día de hoy.");
     return;
   }
   if (modalVictory) modalVictory.classList.remove('hidden');
