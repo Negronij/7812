@@ -265,7 +265,8 @@ function resizeCanvas() {
 function applyDrawingSettings() {
   if (!ctx) return;
   
-  const bgColor = window.getComputedStyle(labCanvas.parentElement).backgroundColor;
+  // Explicit background color for eraser matching var(--bg-elevated)
+  const bgColor = '#111111'; 
   const strokeWidth = document.getElementById('stroke-width-slider').value;
   
   ctx.strokeStyle = currentTool === 'eraser' ? bgColor : currentColor;
@@ -282,6 +283,8 @@ function applyDrawingSettings() {
   if (eraserPreview) {
     eraserPreview.style.width = strokeWidth + 'px';
     eraserPreview.style.height = strokeWidth + 'px';
+    // If tool is eraser, make preview slightly more visible
+    eraserPreview.style.borderColor = currentTool === 'eraser' ? 'rgba(255,255,255,0.8)' : 'rgba(255,255,255,0.2)';
   }
 }
 
@@ -360,6 +363,7 @@ if (labCanvas) {
     if (btnPen) btnPen.classList.add('active');
     if (btnEraser) btnEraser.classList.remove('active');
     colorBtns.forEach(b => b.classList.remove('active'));
+    customColorPicker.classList.add('active');
     applyDrawingSettings();
   });
 
@@ -367,6 +371,7 @@ if (labCanvas) {
     btn.addEventListener('click', () => {
       currentColor = btn.getAttribute('data-color');
       colorBtns.forEach(b => b.classList.remove('active'));
+      if (customColorPicker) customColorPicker.classList.remove('active');
       btn.classList.add('active');
       currentTool = 'pen'; // Auto switch to pen when color picked
       if (btnPen) btnPen.classList.add('active');
