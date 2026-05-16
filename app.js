@@ -312,14 +312,14 @@ window.toggleWarObj = (index) => {
 };
 
 // --- EVENT LISTENERS ---
-btnModeText.addEventListener('click', () => {
+if (btnModeText) btnModeText.addEventListener('click', () => {
   btnModeText.classList.add('active');
   btnModeDraw.classList.remove('active');
   labTextContainer.classList.remove('hidden');
   labDrawContainer.classList.add('hidden');
 });
 
-btnModeDraw.addEventListener('click', () => {
+if (btnModeDraw) btnModeDraw.addEventListener('click', () => {
   btnModeDraw.classList.add('active');
   btnModeText.classList.remove('active');
   labDrawContainer.classList.remove('hidden');
@@ -540,11 +540,12 @@ if (labCanvas) {
   });
 }
 
-btnClearCanvas.addEventListener('click', () => {
-  ctx.clearRect(0, 0, labCanvas.width, labCanvas.height);
+if (btnClearCanvas) btnClearCanvas.addEventListener('click', () => {
+  if (ctx && labCanvas) ctx.clearRect(0, 0, labCanvas.width, labCanvas.height);
 });
 
-btnSaveDraw.addEventListener('click', () => {
+if (btnSaveDraw) btnSaveDraw.addEventListener('click', () => {
+  if (!labCanvas) return;
   const link = document.createElement('a');
   link.download = `idea-${Date.now()}.png`;
   link.href = labCanvas.toDataURL();
@@ -587,15 +588,16 @@ const initialState = savedSidebarState === null ? isMobile : savedSidebarState =
 toggleSidebar(initialState);
 
 if (btnSidebarWar) btnSidebarWar.addEventListener('click', () => {
-  warMode.classList.add('active');
-  sidebar.classList.add('-translate-x-full');
+  if (warMode) warMode.classList.add('active');
+  toggleSidebar(true);
 });
 
 navItems.forEach(item => {
   item.addEventListener('click', () => {
-    // Si es un enlace real (a), el navegador navegará solo.
-    // Si es un botón, manejamos el sidebar.
-    sidebar.classList.add('-translate-x-full');
+    // On mobile, close sidebar after clicking a nav item
+    if (window.innerWidth < 1024) {
+      toggleSidebar(true);
+    }
   });
 });
 
@@ -666,15 +668,16 @@ function updateWarTimer() {
   warTimer.innerText = `${mins}:${secs}`;
 }
 
-btnEnterWar.addEventListener('click', () => {
-  warMode.classList.add('active');
+if (btnEnterWar) btnEnterWar.addEventListener('click', () => {
+  if (warMode) warMode.classList.add('active');
 });
 
-btnExitWar.addEventListener('click', () => {
-  warMode.classList.remove('active');
+if (btnExitWar) btnExitWar.addEventListener('click', () => {
+  if (warMode) warMode.classList.remove('active');
 });
 
-btnStartWar.addEventListener('click', () => {
+if (btnStartWar) btnStartWar.addEventListener('click', () => {
+  if (!warTimer) return;
   if(warInterval) clearInterval(warInterval);
   btnStartWar.innerHTML = `<i data-lucide="activity" style="width:20px"></i> Luchando...`;
   lucide.createIcons();
