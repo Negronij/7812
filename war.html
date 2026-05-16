@@ -11,6 +11,18 @@
   <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body class="bg-base overflow-hidden">
+  <!-- AUTH SCREEN -->
+  <div id="auth-screen" class="auth-screen hidden">
+    <div class="auth-card">
+      <i data-lucide="shield" class="text-primary mb-4" style="width: 48px; height: 48px;"></i>
+      <h2 class="text-title mb-2">Bienvenido al Sistema</h2>
+      <p class="text-muted text-small">Inicia sesión para sincronizar tu progreso en tiempo real.</p>
+      <button id="btn-login-google" class="btn-google">
+        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/pwa_light/google.svg" width="20" alt="Google">
+        <span>Continuar con Google</span>
+      </button>
+    </div>
+  </div>
 
   <div id="war-mode" class="war-mode active">
     <a href="index.html" class="absolute top-8 right-8 text-muted hover-white"><i data-lucide="x" style="width:32px; height:32px;"></i></a>
