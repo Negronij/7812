@@ -98,7 +98,6 @@ button {
   }
   .sidebar-collapsed-padding { margin-left: 0 !important; }
   .sidebar-open-padding { margin-left: 260px !important; }
-  .lg\:hidden { display: none !important; }
 }
 
 /* Header */
@@ -117,10 +116,26 @@ button {
   box-shadow: 10px 0 30px rgba(0,0,0,0.5);
   transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 1000;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  transform: translateX(0); /* Por defecto abierta en escritorio si no tiene .collapsed */
 }
 
 .sidebar.collapsed {
   transform: translateX(-100%) !important;
+}
+
+/* En móviles, por defecto está fuera de la pantalla */
+@media (max-width: 1023px) {
+  .sidebar {
+    transform: translateX(-100%);
+  }
+  .sidebar.open {
+    transform: translateX(0) !important;
+  }
+  .sidebar-open-padding { margin-left: 0 !important; }
 }
 
 .container {
