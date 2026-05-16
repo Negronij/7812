@@ -67,15 +67,27 @@
                 <i data-lucide="eraser" style="width:14px"></i> <span>Borrar</span>
               </button>
             </div>
-            <div class="flex gap-2" id="color-palette">
+            <div class="flex gap-2 items-center" id="color-palette">
               <div class="color-btn active" style="background: #ffffff;" data-color="#ffffff"></div>
               <div class="color-btn" style="background: #4285f4;" data-color="#4285f4"></div>
               <div class="color-btn" style="background: #ea4335;" data-color="#ea4335"></div>
-              <div class="color-btn" style="background: #fbbc05;" data-color="#fbbc05"></div>
               <div class="color-btn" style="background: #34a853;" data-color="#34a853"></div>
+              <input type="color" id="custom-color-picker" class="color-btn-custom" title="Elegir color">
             </div>
           </div>
-          <div class="canvas-container mb-2" style="height: 500px;"><canvas id="lab-canvas"></canvas></div>
+          
+          <div class="flex items-center gap-4 mb-4 px-2">
+            <span class="text-small text-muted">Grosor:</span>
+            <input type="range" id="stroke-width-slider" min="1" max="100" value="3" class="flex-1 accent-primary">
+            <span id="stroke-value" class="text-small font-mono w-8">3px</span>
+          </div>
+
+          <div class="canvas-scroll-wrapper" id="canvas-scroll-container">
+            <div class="canvas-container-dynamic">
+              <canvas id="lab-canvas"></canvas>
+              <div id="eraser-preview" class="eraser-preview hidden"></div>
+            </div>
+          </div>
           <div class="flex gap-2">
             <button class="btn btn-outline flex-1" id="btn-clear-canvas"><i data-lucide="trash-2" style="width:14px"></i> Limpiar</button>
             <button class="btn btn-primary flex-1" id="btn-save-draw"><i data-lucide="download" style="width:14px"></i> Guardar Imagen</button>
