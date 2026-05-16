@@ -682,8 +682,48 @@ button {
   color: var(--bg-base);
 }
 
+/* Weekly Calendar */
+.calendar-day {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.75rem 0.25rem;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+}
+.calendar-day:hover {
+  background-color: rgba(255,255,255,0.05);
+}
+.calendar-day.active {
+  background-color: var(--text-primary);
+  color: var(--bg-base);
+}
+.calendar-day.disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+.day-name { font-size: 0.7rem; text-transform: uppercase; margin-bottom: 0.25rem; opacity: 0.6; }
+.day-number { font-size: 1.1rem; font-weight: 700; font-family: var(--font-display); }
+
+/* Modal Utils */
+.inset-0 { top: 0; right: 0; bottom: 0; left: 0; }
+.bg-black\/80 { background-color: rgba(0,0,0,0.8); }
+.backdrop-blur-sm { backdrop-filter: blur(4px); }
+
+@keyframes scaleIn {
+  from { transform: scale(0.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+.animate-scale-in { animation: scaleIn 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+
 /* Animation Utils */
 @keyframes spin {
   100% { transform: rotate(360deg); }
 }
 .spin { animation: spin 1s linear infinite; }
+
+.select-none { user-select: none; }
+.pointer-events-none { pointer-events: none; }
