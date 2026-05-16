@@ -95,7 +95,24 @@ const warTimer = document.getElementById('war-timer');
 const warObjectives = document.getElementById('war-objectives');
 const btnStartWar = document.getElementById('btn-start-war');
 
-// Auth Elements
+// Mission Modal & Calendar Elements
+const weeklyCalendar = document.getElementById('weekly-calendar');
+const btnPrevWeek = document.getElementById('btn-prev-week');
+const btnNextWeek = document.getElementById('btn-next-week');
+const modalMission = document.getElementById('modal-mission');
+const btnCloseModal = document.getElementById('btn-close-modal');
+const formMission = document.getElementById('form-mission');
+const weeklyEfficiency = document.getElementById('weekly-efficiency');
+const efficiencyBar = document.getElementById('efficiency-bar');
+const dailyCompleted = document.getElementById('daily-completed');
+const dailyBar = document.getElementById('daily-bar');
+
+// Mission State
+let selectedDate = new Date();
+selectedDate.setHours(0,0,0,0);
+let currentWeekStart = new Date();
+currentWeekStart.setDate(currentWeekStart.getDate() - currentWeekStart.getDay() + (currentWeekStart.getDay() === 0 ? -6 : 1)); // Lunes
+currentWeekStart.setHours(0,0,0,0);
 const authScreen = document.getElementById('auth-screen');
 const btnLoginGoogle = document.getElementById('btn-login-google');
 const userProfile = document.getElementById('user-profile');
@@ -128,6 +145,10 @@ onAuthStateChanged(auth, (user) => {
       const data = snapshot.val();
       if (data) {
         renderDashboard(data);
+        if (weeklyCalendar) {
+          renderWeeklyCalendar();
+          calculateStats(data);
+        }
       } else {
         // Initialize new user with default data
         set(userRef, DEFAULT_DATA);
@@ -217,21 +238,93 @@ function renderResurrection(arr) {
 
 function renderMissions(missionsObj) {
   if (!missionsList) return;
-  missionsList.innerHTML = Object.entries(missionsObj).map(([id, mission]) => `
-    <div class="mission-item cursor-pointer" onclick="window.toggleMission('${id}', ${mission.done})">
-      <div class="mission-checkbox ${mission.done ? 'checked' : ''}">
-        ${mission.done ? '<i data-lucide="check" style="width:14px"></i>' : ''}
-      </div>
-      <div class="mission-content">
-        <div class="mission-title ${mission.done ? 'text-muted line-through' : ''}">Misión: ${mission.title}</div>
-        <div class="mission-meta">
-          <span class="meta-tag"><i data-lucide="zap" style="width:10px"></i> ${mission.difficulty}</span>
-          <span class="meta-tag">⏱ ${mission.duration}</span>
-          <span class="meta-tag">💥 Impacto ${mission.impact}</span>
+  
+  const dateStr = selectedDate.toISOString().split('T')[0];
+  const dailyMissions = missionsObj[dateStr] || {};
+  const isPast = selectedDate < new Date().setHours(0,0,0,0);
+  const isTooFar = selectedDate > new Date().setDate(new Date().getDate() + 1); // Solo hoy y mañana
+
+  missionsList.innerHTML = Object.entries(dailyMissions).map(([id, mission]) => `
+    <div class="mission-item group">
+      <div class="flex items-start gap-3 flex-1" onclick="window.toggleMission('${id}', ${mission.done})">
+        <div class="mission-checkbox ${mission.done ? 'checked' : ''}">
+          ${mission.done ? '<i data-lucide="check" style="width:14px"></i>' : ''}
+        </div>
+        <div class="mission-content">
+          <div class="mission-title ${mission.done ? 'text-muted line-through' : ''}">${mission.title}</div>
+          <div class="mission-meta">
+            <span class="meta-tag"><i data-lucide="zap" style="width:10px"></i> ${mission.difficulty}</span>
+            <span class="meta-tag">⏱ ${mission.duration}</span>
+            <span class="meta-tag">💥 Impacto ${mission.impact}</span>
+          </div>
         </div>
       </div>
+      ${!isPast ? `
+        <button onclick="window.deleteMission('${id}')" class="btn-icon text-muted opacity-0 group-hover:opacity-100 transition-opacity">
+          <i data-lucide="trash-2" style="width:16px"></i>
+        </button>
+      ` : ''}
     </div>
-  `).join('');
+  `).join('') || '<p class="text-center text-muted py-8">No hay misiones para este día.</p>';
+}
+
+function renderWeeklyCalendar() {
+  if (!weeklyCalendar) return;
+  
+  const days = [];
+  const start = new Date(currentWeekStart);
+  const today = new Date();
+  today.setHours(0,0,0,0);
+
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(start);
+    d.setDate(d.getDate() + i);
+    days.push(d);
+  }
+
+  weeklyCalendar.innerHTML = days.map(d => {
+    const isSelected = d.getTime() === selectedDate.getTime();
+    const isToday = d.getTime() === today.getTime();
+    const names = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+    return `
+      <div class="calendar-day ${isSelected ? 'active' : ''}" onclick="window.selectDate(${d.getTime()})">
+        <span class="day-name">${names[d.getDay()]}</span>
+        <span class="day-number">${d.getDate()}</span>
+        ${isToday ? '<div class="w-1 h-1 bg-accent-red rounded-full mt-1"></div>' : ''}
+      </div>
+    `;
+  }).join('');
+}
+
+function calculateStats(data) {
+  if (!weeklyEfficiency) return;
+  
+  const missions = data.missions || {};
+  const todayStr = selectedDate.toISOString().split('T')[0];
+  const dayMissions = Object.values(missions[todayStr] || {});
+  
+  // Daily Stats
+  const totalDay = dayMissions.length;
+  const doneDay = dayMissions.filter(m => m.done).length;
+  dailyCompleted.innerText = `${doneDay}/${totalDay}`;
+  dailyBar.style.width = totalDay > 0 ? `${(doneDay / totalDay) * 100}%` : '0%';
+
+  // Weekly Stats (Current displayed week)
+  let totalWeek = 0;
+  let doneWeek = 0;
+  const start = new Date(currentWeekStart);
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(start);
+    d.setDate(d.getDate() + i);
+    const dStr = d.toISOString().split('T')[0];
+    const ms = Object.values(missions[dStr] || {});
+    totalWeek += ms.length;
+    doneWeek += ms.filter(m => m.done).length;
+  }
+
+  const efficiency = totalWeek > 0 ? Math.round((doneWeek / totalWeek) * 100) : 0;
+  weeklyEfficiency.innerText = `${efficiency}%`;
+  efficiencyBar.style.width = `${efficiency}%`;
 }
 
 function renderMiniVictories(victoriesObj) {
@@ -266,25 +359,41 @@ function renderWarObjectives(arr) {
 // --- ACTIONS EXPOSED TO WINDOW ---
 window.toggleMission = (id, currentDone) => {
   if (!userRef) return;
-  update(ref(db, `users/${currentUser.uid}/missions/${id}`), { done: !currentDone });
+  const isPast = selectedDate < new Date().setHours(0,0,0,0);
+  if (isPast) {
+    alert("No puedes modificar misiones de días pasados.");
+    return;
+  }
+  const dateStr = selectedDate.toISOString().split('T')[0];
+  update(ref(db, `users/${currentUser.uid}/missions/${dateStr}/${id}`), { done: !currentDone });
 };
 
-window.toggleVictory = (id, currentDone) => {
+window.deleteMission = (id) => {
   if (!userRef) return;
-  update(ref(db, `users/${currentUser.uid}/miniVictories/${id}`), { done: !currentDone });
+  if (!confirm("¿Seguro que quieres eliminar esta misión?")) return;
+  const dateStr = selectedDate.toISOString().split('T')[0];
+  set(ref(db, `users/${currentUser.uid}/missions/${dateStr}/${id}`), null);
 };
 
 window.addMission = () => {
   if (!userRef) return;
-  const title = prompt("Nombre de la misión:");
-  if (!title) return;
-  const id = 'm' + Date.now();
-  set(ref(db, `users/${currentUser.uid}/missions/${id}`), {
-    title,
-    difficulty: "Media",
-    duration: "1h",
-    impact: "Medio",
-    done: false
+  const today = new Date().setHours(0,0,0,0);
+  const tomorrow = new Date(); tomorrow.setDate(tomorrow.getDate() + 1); tomorrow.setHours(0,0,0,0);
+  
+  if (selectedDate < today || selectedDate > tomorrow) {
+    alert("Solo puedes añadir misiones para hoy o mañana.");
+    return;
+  }
+
+  if (modalMission) modalMission.classList.remove('hidden');
+};
+
+window.selectDate = (timestamp) => {
+  selectedDate = new Date(timestamp);
+  renderWeeklyCalendar();
+  // We need to re-fetch or re-render based on current snapshot
+  get(userRef).then(snapshot => {
+    if (snapshot.exists()) renderDashboard(snapshot.val());
   });
 };
 
@@ -579,6 +688,44 @@ function toggleSidebar(forceCollapse) {
 
 if (btnToggleSidebarAll) btnToggleSidebarAll.addEventListener('click', () => toggleSidebar());
 if (btnCollapseSidebar) btnCollapseSidebar.addEventListener('click', () => toggleSidebar(true));
+
+// Mission Modal & Calendar Navigation
+if (btnPrevWeek) btnPrevWeek.addEventListener('click', () => {
+  currentWeekStart.setDate(currentWeekStart.getDate() - 7);
+  renderWeeklyCalendar();
+  get(userRef).then(snapshot => { if (snapshot.exists()) calculateStats(snapshot.val()); });
+});
+
+if (btnNextWeek) btnNextWeek.addEventListener('click', () => {
+  currentWeekStart.setDate(currentWeekStart.getDate() + 7);
+  renderWeeklyCalendar();
+  get(userRef).then(snapshot => { if (snapshot.exists()) calculateStats(snapshot.val()); });
+});
+
+if (btnCloseModal) btnCloseModal.addEventListener('click', () => {
+  modalMission.classList.add('hidden');
+});
+
+if (formMission) formMission.addEventListener('submit', (e) => {
+  e.preventDefault();
+  if (!userRef) return;
+
+  const dateStr = selectedDate.toISOString().split('T')[0];
+  const id = 'm' + Date.now();
+  const newData = {
+    title: document.getElementById('mission-name').value,
+    difficulty: document.getElementById('mission-difficulty').value,
+    duration: document.getElementById('mission-duration').value,
+    impact: document.getElementById('mission-impact').value,
+    done: false
+  };
+
+  set(ref(db, `users/${currentUser.uid}/missions/${dateStr}/${id}`), newData)
+    .then(() => {
+      modalMission.classList.add('hidden');
+      formMission.reset();
+    });
+});
 
 // Restore sidebar state
 const savedSidebarState = localStorage.getItem('sidebar-collapsed');
