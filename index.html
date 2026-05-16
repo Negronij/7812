@@ -261,6 +261,47 @@
     </div>
   </div>
 
+  <!-- MODAL: AGREGAR MISIÓN -->
+  <div id="modal-mission" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[2100] flex items-center justify-center hidden">
+    <div class="card w-full max-w-md mx-4 animate-scale-in">
+      <div class="flex justify-between items-center mb-6">
+        <h3 class="text-title">Nueva Misión</h3>
+        <button id="btn-close-modal" class="btn-icon"><i data-lucide="x"></i></button>
+      </div>
+      <form id="form-mission" class="flex-col gap-4">
+        <div class="flex-col gap-1">
+          <label class="text-small">Nombre de la Misión</label>
+          <input type="text" id="mission-name" class="textarea w-full" placeholder="Ej: Dominar Cónicas" required>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div class="flex-col gap-1">
+            <label class="text-small">Dificultad</label>
+            <select id="mission-difficulty" class="textarea w-full">
+              <option value="Baja">Baja</option>
+              <option value="Media" selected>Media</option>
+              <option value="Alta">Alta</option>
+              <option value="Extrema">Extrema</option>
+            </select>
+          </div>
+          <div class="flex-col gap-1">
+            <label class="text-small">Duración</label>
+            <input type="text" id="mission-duration" class="textarea w-full" placeholder="Ej: 2h">
+          </div>
+        </div>
+        <div class="flex-col gap-1">
+          <label class="text-small">Impacto</label>
+          <select id="mission-impact" class="textarea w-full">
+            <option value="Bajo">Bajo</option>
+            <option value="Medio" selected>Medio</option>
+            <option value="Alto">Alto</option>
+            <option value="Crítico">Crítico</option>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-primary w-full mt-4 py-4">Guardar Misión</button>
+      </form>
+    </div>
+  </div>
+
   <!-- Firebase Scripts (Modular Módulos ES) -->
   <script type="module" src="app.js"></script>
 </body>
