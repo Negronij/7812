@@ -302,6 +302,32 @@
     </div>
   </div>
 
+  <!-- MODAL: AGREGAR VICTORIA -->
+  <div id="modal-victory" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[2100] flex items-center justify-center hidden">
+    <div class="card w-full max-w-md mx-4 animate-scale-in">
+      <div class="flex justify-between items-center mb-6">
+        <h3 class="text-title">Nueva Mini Victoria</h3>
+        <button id="btn-close-modal-v" class="btn-icon"><i data-lucide="x"></i></button>
+      </div>
+      <form id="form-victory" class="flex-col gap-4">
+        <div class="flex-col gap-1">
+          <label class="text-small">¿Qué lograste hoy?</label>
+          <input type="text" id="victory-text" class="textarea w-full" placeholder="Ej: Entrenar 30 min" required>
+        </div>
+        <div class="flex-col gap-1">
+          <label class="text-small">Impacto</label>
+          <select id="victory-impact" class="textarea w-full">
+            <option value="Bajo">Bajo</option>
+            <option value="Medio" selected>Medio</option>
+            <option value="Alto">Alto</option>
+            <option value="Muy Alto">Muy Alto</option>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-primary w-full mt-4 py-4">Registrar Victoria</button>
+      </form>
+    </div>
+  </div>
+
   <!-- Firebase Scripts (Modular Módulos ES) -->
   <script type="module" src="app.js"></script>
 </body>
