@@ -97,7 +97,7 @@ button {
     grid-template-columns: 1fr 1fr;
   }
   .sidebar-collapsed-padding { margin-left: 0 !important; }
-  .sidebar-open-padding { margin-left: 260px !important; }
+  .sidebar-open-padding { margin-left: 280px !important; }
 }
 
 /* Header */
