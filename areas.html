@@ -22,21 +22,52 @@
     </div>
   </header>
 
+  <!-- AUTH SCREEN -->
+  <div id="auth-screen" class="auth-screen hidden">
+    <div class="auth-card">
+      <i data-lucide="shield" class="text-primary mb-4" style="width: 48px; height: 48px;"></i>
+      <h2 class="text-title mb-2">Bienvenido al Sistema</h2>
+      <p class="text-muted text-small">Inicia sesión para sincronizar tu progreso en tiempo real.</p>
+      <button id="btn-login-google" class="btn-google">
+        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/pwa_light/google.svg" width="20" alt="Google">
+        <span>Continuar con Google</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- SIDEBAR NAVIGATION -->
   <aside id="sidebar" class="sidebar flex flex-col">
     <div class="p-6 border-b flex items-center justify-between">
-      <div class="flex items-center gap-2"><i data-lucide="shield" class="text-primary" style="width:24px"></i><span class="font-bold text-title">SISTEMA</span></div>
-      <button id="btn-collapse-sidebar" class="btn-icon"><i data-lucide="chevron-left"></i></button>
+      <div class="flex items-center gap-3">
+        <i data-lucide="shield" class="text-primary" style="width:24px"></i>
+        <span class="font-bold text-title">SISTEMA</span>
+      </div>
+      <button id="btn-collapse-sidebar" class="btn-icon">
+        <i data-lucide="chevron-left"></i>
+      </button>
     </div>
-    <nav class="flex-1 overflow-y-auto p-4 flex flex-col gap-2">
-      <a href="index.html" class="nav-item"><i data-lucide="layout-dashboard"></i> El Mapa</a>
-      <a href="missions.html" class="nav-item"><i data-lucide="target"></i> Misiones</a>
-      <a href="victories.html" class="nav-item"><i data-lucide="flag"></i> Mini Victorias</a>
-      <a href="areas.html" class="nav-item active"><i data-lucide="activity"></i> Áreas de Vida</a>
-      <a href="identity.html" class="nav-item"><i data-lucide="user"></i> Identidad</a>
-      <a href="lab.html" class="nav-item"><i data-lucide="brain"></i> Laboratorio</a>
-      <a href="resurrection.html" class="nav-item"><i data-lucide="bar-chart-2"></i> Resurrección</a>
-      <div class="mt-auto pt-4 border-t border-border-color"><a href="war.html" class="nav-item text-red"><i data-lucide="sword"></i> Modo Guerra</a></div>
+    
+    <nav class="flex-1 overflow-y-auto p-4 flex flex-col gap-1">
+      <a href="index.html" class="nav-item"><i data-lucide="layout-dashboard"></i> <span>El Mapa</span></a>
+      <a href="missions.html" class="nav-item"><i data-lucide="target"></i> <span>Misiones</span></a>
+      <a href="victories.html" class="nav-item"><i data-lucide="flag"></i> <span>Mini Victorias</span></a>
+      <a href="areas.html" class="nav-item active"><i data-lucide="activity"></i> <span>Áreas de Vida</span></a>
+      <a href="identity.html" class="nav-item"><i data-lucide="user"></i> <span>Identidad</span></a>
+      <a href="lab.html" class="nav-item"><i data-lucide="brain"></i> <span>Laboratorio</span></a>
+      <a href="resurrection.html" class="nav-item"><i data-lucide="bar-chart-2"></i> <span>Resurrección</span></a>
+      <div class="mt-4 pt-4 border-t border-border-color">
+        <a href="war.html" class="nav-item text-red"><i data-lucide="sword"></i> <span>Modo Guerra</span></a>
+      </div>
     </nav>
+
+    <!-- User Profile in Sidebar -->
+    <div id="user-profile" class="user-profile hidden">
+      <img id="user-photo" src="" alt="Avatar" class="user-avatar">
+      <div class="user-info">
+        <span id="user-name" class="user-name">Usuario</span>
+        <button id="btn-logout" class="text-small text-muted text-left hover-white">Cerrar sesión</button>
+      </div>
+    </div>
   </aside>
 
   <div class="container pt-20 lg:pt-8" id="main-container">
