@@ -531,15 +531,20 @@ button {
 }
 
 .color-btn-custom {
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
-  border: none;
+  border: 2px solid transparent;
   background: conic-gradient(red, yellow, lime, aqua, blue, magenta, red);
   cursor: pointer;
   padding: 0;
   overflow: hidden;
+  transition: transform 0.2s, border-color 0.2s;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
 }
+
+.color-btn-custom:hover { transform: scale(1.1); }
+.color-btn-custom.active { border-color: white; transform: scale(1.2); }
 
 .color-btn-custom::-webkit-color-swatch-wrapper { padding: 0; }
 .color-btn-custom::-webkit-color-swatch { border: none; border-radius: 50%; }
