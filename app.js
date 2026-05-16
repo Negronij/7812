@@ -107,6 +107,13 @@ const efficiencyBar = document.getElementById('efficiency-bar');
 const dailyCompleted = document.getElementById('daily-completed');
 const dailyBar = document.getElementById('daily-bar');
 
+const dailyBar = document.getElementById('daily-bar');
+
+// Victory Modal Elements
+const modalVictory = document.getElementById('modal-victory');
+const btnCloseModalV = document.getElementById('btn-close-modal-v');
+const formVictory = document.getElementById('form-victory');
+
 // Mission State
 let selectedDate = new Date();
 selectedDate.setHours(0,0,0,0);
@@ -329,16 +336,29 @@ function calculateStats(data) {
 
 function renderMiniVictories(victoriesObj) {
   if (!miniVictoriesList) return;
-  miniVictoriesList.innerHTML = Object.entries(victoriesObj).map(([id, victory]) => `
-    <div onclick="window.toggleVictory('${id}', ${victory.done})" 
-         class="flex items-center gap-2 px-3 py-1 rounded-full border cursor-pointer text-small"
-         style="border-color: ${victory.done ? 'var(--text-primary)' : 'var(--border-color)'}; 
-                color: ${victory.done ? 'var(--bg-base)' : 'var(--text-secondary)'}; 
-                background-color: ${victory.done ? 'var(--text-primary)' : 'transparent'}">
-      ${victory.done ? '<i data-lucide="check" style="width:12px"></i>' : ''}
-      ${victory.text}
+  
+  const dateStr = selectedDate.toISOString().split('T')[0];
+  const dailyVictories = victoriesObj[dateStr] || {};
+  const isPast = selectedDate < new Date().setHours(0,0,0,0);
+
+  miniVictoriesList.innerHTML = Object.entries(dailyVictories).map(([id, victory]) => `
+    <div class="flex items-center gap-2 group">
+      <div onclick="window.toggleVictory('${id}', ${victory.done})" 
+           class="flex items-center gap-2 px-3 py-1 rounded-full border cursor-pointer text-small transition-all"
+           style="border-color: ${victory.done ? 'var(--text-primary)' : 'var(--border-color)'}; 
+                  color: ${victory.done ? 'var(--bg-base)' : 'var(--text-secondary)'}; 
+                  background-color: ${victory.done ? 'var(--text-primary)' : 'transparent'}">
+        ${victory.done ? '<i data-lucide="check" style="width:12px"></i>' : ''}
+        <span>${victory.text}</span>
+        <span class="opacity-40 text-[10px] ml-1">${victory.impact || 'Medio'}</span>
+      </div>
+      ${!isPast ? `
+        <button onclick="window.deleteVictory('${id}')" class="btn-icon text-muted opacity-0 group-hover:opacity-100 transition-opacity p-1">
+          <i data-lucide="trash-2" style="width:14px"></i>
+        </button>
+      ` : ''}
     </div>
-  `).join('');
+  `).join('') || '<p class="text-small text-muted py-2">Sin victorias registradas para este día.</p>';
 }
 
 function renderWarObjectives(arr) {
@@ -397,15 +417,32 @@ window.selectDate = (timestamp) => {
   });
 };
 
+window.toggleVictory = (id, currentDone) => {
+  if (!userRef) return;
+  const isPast = selectedDate < new Date().setHours(0,0,0,0);
+  if (isPast) {
+    alert("No puedes modificar victorias de días pasados.");
+    return;
+  }
+  const dateStr = selectedDate.toISOString().split('T')[0];
+  update(ref(db, `users/${currentUser.uid}/miniVictories/${dateStr}/${id}`), { done: !currentDone });
+};
+
+window.deleteVictory = (id) => {
+  if (!userRef) return;
+  if (!confirm("¿Seguro que quieres eliminar esta victoria?")) return;
+  const dateStr = selectedDate.toISOString().split('T')[0];
+  set(ref(db, `users/${currentUser.uid}/miniVictories/${dateStr}/${id}`), null);
+};
+
 window.addVictory = () => {
   if (!userRef) return;
-  const text = prompt("¿Qué victoria conseguiste?");
-  if (!text) return;
-  const id = 'v' + Date.now();
-  set(ref(db, `users/${currentUser.uid}/miniVictories/${id}`), {
-    text,
-    done: true
-  });
+  const today = new Date().setHours(0,0,0,0);
+  if (selectedDate < today) {
+    alert("No puedes añadir victorias a días pasados.");
+    return;
+  }
+  if (modalVictory) modalVictory.classList.remove('hidden');
 };
 
 // War Mode Local State for objectives
@@ -724,6 +761,29 @@ if (formMission) formMission.addEventListener('submit', (e) => {
     .then(() => {
       modalMission.classList.add('hidden');
       formMission.reset();
+    });
+});
+
+if (btnCloseModalV) btnCloseModalV.addEventListener('click', () => {
+  modalVictory.classList.add('hidden');
+});
+
+if (formVictory) formVictory.addEventListener('submit', (e) => {
+  e.preventDefault();
+  if (!userRef) return;
+
+  const dateStr = selectedDate.toISOString().split('T')[0];
+  const id = 'v' + Date.now();
+  const newData = {
+    text: document.getElementById('victory-text').value,
+    impact: document.getElementById('victory-impact').value,
+    done: true
+  };
+
+  set(ref(db, `users/${currentUser.uid}/miniVictories/${dateStr}/${id}`), newData)
+    .then(() => {
+      modalVictory.classList.add('hidden');
+      formVictory.reset();
     });
 });
 
