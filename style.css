@@ -111,29 +111,31 @@ button {
 
 /* Sidebar */
 .sidebar {
-  width: 260px;
+  width: 280px;
   background-color: var(--bg-surface);
-  box-shadow: 10px 0 30px rgba(0,0,0,0.5);
+  border-right: 1px solid var(--border-color);
   transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 1000;
   position: fixed;
   top: 0;
   left: 0;
   height: 100vh;
-  transform: translateX(0); /* Por defecto abierta en escritorio si no tiene .collapsed */
+  display: flex;
+  flex-direction: column;
 }
 
 .sidebar.collapsed {
-  transform: translateX(-100%) !important;
+  transform: translateX(-100%);
 }
 
 /* En móviles, por defecto está fuera de la pantalla */
 @media (max-width: 1023px) {
   .sidebar {
     transform: translateX(-100%);
+    box-shadow: 20px 0 50px rgba(0,0,0,0.8);
   }
   .sidebar.open {
-    transform: translateX(0) !important;
+    transform: translateX(0);
   }
   .sidebar-open-padding { margin-left: 0 !important; }
 }
@@ -145,32 +147,118 @@ button {
 .nav-item {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  padding: 1rem 1.25rem;
+  gap: 1rem;
+  padding: 0.85rem 1.25rem;
   border-radius: 12px;
   color: var(--text-secondary);
   font-weight: 500;
   font-size: 0.95rem;
-  transition: all 0.2s ease;
-  text-align: left;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  text-decoration: none;
   margin-bottom: 0.25rem;
+  border: 1px solid transparent;
 }
 
 .nav-item:hover {
-  background-color: rgba(255,255,255,0.05);
+  background-color: rgba(255,255,255,0.03);
   color: var(--text-primary);
-  transform: translateX(5px);
+  border-color: rgba(255,255,255,0.05);
+  transform: translateX(4px);
 }
 
 .nav-item.active {
-  background-color: var(--text-primary);
-  color: var(--bg-base);
-  box-shadow: 0 4px 15px rgba(255,255,255,0.2);
+  background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.02) 100%);
+  color: var(--text-primary);
+  border-color: rgba(255,255,255,0.15);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
 }
 
 .nav-item i {
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
+  opacity: 0.7;
+}
+
+.nav-item.active i {
+  opacity: 1;
+}
+
+/* Auth Screen */
+.auth-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--bg-base);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  padding: 2rem;
+  text-align: center;
+}
+
+.auth-card {
+  max-width: 400px;
+  width: 100%;
+  padding: 3rem;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: 24px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+}
+
+.btn-google {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  width: 100%;
+  padding: 1rem;
+  background: white;
+  color: black;
+  border-radius: 12px;
+  font-weight: 600;
+  margin-top: 2rem;
+  transition: all 0.3s ease;
+}
+
+.btn-google:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(255,255,255,0.2);
+}
+
+.user-profile {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  margin-top: auto;
+  border-top: 1px solid var(--border-color);
+}
+
+.user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid var(--border-color);
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.user-name {
+  font-size: 0.85rem;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* Gemini Panel */
