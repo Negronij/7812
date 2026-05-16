@@ -419,9 +419,9 @@ window.selectDate = (timestamp) => {
 
 window.toggleVictory = (id, currentDone) => {
   if (!userRef) return;
-  const isPast = selectedDate < new Date().setHours(0,0,0,0);
-  if (isPast) {
-    alert("No puedes modificar victorias de días pasados.");
+  const today = new Date().setHours(0,0,0,0);
+  if (selectedDate.getTime() !== today) {
+    alert("Las victorias solo pueden marcarse el mismo día.");
     return;
   }
   const dateStr = selectedDate.toISOString().split('T')[0];
@@ -430,6 +430,11 @@ window.toggleVictory = (id, currentDone) => {
 
 window.deleteVictory = (id) => {
   if (!userRef) return;
+  const today = new Date().setHours(0,0,0,0);
+  if (selectedDate.getTime() !== today) {
+    alert("No puedes eliminar victorias de días pasados o futuros.");
+    return;
+  }
   if (!confirm("¿Seguro que quieres eliminar esta victoria?")) return;
   const dateStr = selectedDate.toISOString().split('T')[0];
   set(ref(db, `users/${currentUser.uid}/miniVictories/${dateStr}/${id}`), null);
@@ -438,8 +443,8 @@ window.deleteVictory = (id) => {
 window.addVictory = () => {
   if (!userRef) return;
   const today = new Date().setHours(0,0,0,0);
-  if (selectedDate < today) {
-    alert("No puedes añadir victorias a días pasados.");
+  if (selectedDate.getTime() !== today) {
+    alert("Las victorias solo pueden registrarse el mismo día.");
     return;
   }
   if (modalVictory) modalVictory.classList.remove('hidden');
