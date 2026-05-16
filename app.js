@@ -1,5 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
-import { getDatabase, ref, onValue, set, update } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-database.js";
+import { getDatabase, ref, onValue, set, update, get } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-database.js";
+import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
 
 // --- FIREBASE CONFIG ---
 const firebaseConfig = {
@@ -15,6 +16,8 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
+const auth = getAuth(app);
+const provider = new GoogleAuthProvider();
 
 // --- DEFAULT DATA ---
 const DEFAULT_DATA = {
@@ -92,20 +95,68 @@ const warTimer = document.getElementById('war-timer');
 const warObjectives = document.getElementById('war-objectives');
 const btnStartWar = document.getElementById('btn-start-war');
 
+// Auth Elements
+const authScreen = document.getElementById('auth-screen');
+const btnLoginGoogle = document.getElementById('btn-login-google');
+const userProfile = document.getElementById('user-profile');
+const userPhoto = document.getElementById('user-photo');
+const userName = document.getElementById('user-name');
+const btnLogout = document.getElementById('btn-logout');
+
 // --- INIT ---
 lucide.createIcons();
-const userRef = ref(db, 'users/juan');
 
-// Realtime Listener
-onValue(userRef, (snapshot) => {
-  const data = snapshot.val();
-  if (data) {
-    renderDashboard(data);
+let currentUser = null;
+let userRef = null;
+
+// Auth State Observer
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    currentUser = user;
+    userRef = ref(db, `users/${user.uid}`);
+    
+    // UI Updates
+    if (authScreen) authScreen.classList.add('hidden');
+    if (userProfile) {
+      userProfile.classList.remove('hidden');
+      if (userPhoto) userPhoto.src = user.photoURL;
+      if (userName) userName.innerText = user.displayName;
+    }
+
+    // Listen for data
+    onValue(userRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        renderDashboard(data);
+      } else {
+        // Initialize new user with default data
+        set(userRef, DEFAULT_DATA);
+      }
+    });
   } else {
-    // Inicializar si está vacío
-    set(userRef, DEFAULT_DATA);
+    currentUser = null;
+    userRef = null;
+    if (authScreen) authScreen.classList.remove('hidden');
+    if (userProfile) userProfile.classList.add('hidden');
+    if (loadingScreen) loadingScreen.classList.add('hidden'); // Hide loader to show auth
   }
 });
+
+// Auth Actions
+if (btnLoginGoogle) {
+  btnLoginGoogle.addEventListener('click', async () => {
+    try {
+      await signInWithPopup(auth, provider);
+    } catch (error) {
+      console.error("Error signing in:", error);
+      alert("Error al iniciar sesión. Intenta de nuevo.");
+    }
+  });
+}
+
+if (btnLogout) {
+  btnLogout.addEventListener('click', () => signOut(auth));
+}
 
 // --- RENDER FUNCTIONS ---
 function renderDashboard(data) {
@@ -214,11 +265,38 @@ function renderWarObjectives(arr) {
 
 // --- ACTIONS EXPOSED TO WINDOW ---
 window.toggleMission = (id, currentDone) => {
-  update(ref(db, `users/juan/missions/${id}`), { done: !currentDone });
+  if (!userRef) return;
+  update(ref(db, `users/${currentUser.uid}/missions/${id}`), { done: !currentDone });
 };
 
 window.toggleVictory = (id, currentDone) => {
-  update(ref(db, `users/juan/miniVictories/${id}`), { done: !currentDone });
+  if (!userRef) return;
+  update(ref(db, `users/${currentUser.uid}/miniVictories/${id}`), { done: !currentDone });
+};
+
+window.addMission = () => {
+  if (!userRef) return;
+  const title = prompt("Nombre de la misión:");
+  if (!title) return;
+  const id = 'm' + Date.now();
+  set(ref(db, `users/${currentUser.uid}/missions/${id}`), {
+    title,
+    difficulty: "Media",
+    duration: "1h",
+    impact: "Medio",
+    done: false
+  });
+};
+
+window.addVictory = () => {
+  if (!userRef) return;
+  const text = prompt("¿Qué victoria conseguiste?");
+  if (!text) return;
+  const id = 'v' + Date.now();
+  set(ref(db, `users/${currentUser.uid}/miniVictories/${id}`), {
+    text,
+    done: true
+  });
 };
 
 // War Mode Local State for objectives
@@ -289,8 +367,62 @@ function applyDrawingSettings() {
 }
 
 function startDrawing(e) {
+  if (currentTool === 'bucket') {
+    fillArea(e);
+    return;
+  }
   drawing = true;
   draw(e);
+}
+
+function fillArea(e) {
+  if (!ctx || !labCanvas) return;
+  const rect = labCanvas.getBoundingClientRect();
+  const startX = Math.round((e.clientX || (e.touches && e.touches[0].clientX)) - rect.left);
+  const startY = Math.round((e.clientY || (e.touches && e.touches[0].clientY)) - rect.top);
+  
+  const imageData = ctx.getImageData(0, 0, labCanvas.width, labCanvas.height);
+  const pixelData = imageData.data;
+  
+  const startPos = (startY * labCanvas.width + startX) * 4;
+  const startR = pixelData[startPos];
+  const startG = pixelData[startPos + 1];
+  const startB = pixelData[startPos + 2];
+  const startA = pixelData[startPos + 3];
+
+  const fillColor = hexToRgb(currentColor);
+  if (!fillColor) return;
+  
+  // Don't fill if same color
+  if (startR === fillColor.r && startG === fillColor.g && startB === fillColor.b && startA === 255) return;
+
+  const stack = [[startX, startY]];
+  
+  while (stack.length) {
+    const [x, y] = stack.pop();
+    const pos = (y * labCanvas.width + x) * 4;
+
+    if (x < 0 || x >= labCanvas.width || y < 0 || y >= labCanvas.height) continue;
+    if (pixelData[pos] !== startR || pixelData[pos+1] !== startG || pixelData[pos+2] !== startB || pixelData[pos+3] !== startA) continue;
+
+    pixelData[pos] = fillColor.r;
+    pixelData[pos + 1] = fillColor.g;
+    pixelData[pos + 2] = fillColor.b;
+    pixelData[pos + 3] = 255;
+
+    stack.push([x + 1, y], [x - 1, y], [x, y + 1], [x, y - 1]);
+  }
+
+  ctx.putImageData(imageData, 0, 0);
+}
+
+function hexToRgb(hex) {
+  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  return result ? {
+    r: parseInt(result[1], 16),
+    g: parseInt(result[2], 16),
+    b: parseInt(result[3], 16)
+  } : null;
 }
 
 function stopDrawing() {
@@ -350,6 +482,33 @@ if (labCanvas) {
     currentTool = 'eraser';
     btnEraser.classList.add('active');
     btnPen.classList.remove('active');
+    if (btnBucket) btnBucket.classList.remove('active');
+    applyDrawingSettings();
+  });
+
+  const btnBucket = document.getElementById('btn-tool-bucket');
+  if (btnBucket) btnBucket.addEventListener('click', () => {
+    currentTool = 'bucket';
+    btnBucket.classList.add('active');
+    btnPen.classList.remove('active');
+    if (btnEraser) btnEraser.classList.remove('active');
+    applyDrawingSettings();
+  });
+
+  const btnAddSpace = document.getElementById('btn-add-space');
+  if (btnAddSpace) btnAddSpace.addEventListener('click', () => {
+    if (!labCanvas || !ctx) return;
+    const tempCanvas = document.createElement('canvas');
+    tempCanvas.width = labCanvas.width;
+    tempCanvas.height = labCanvas.height;
+    tempCanvas.getContext('2d').drawImage(labCanvas, 0, 0);
+    
+    const newHeight = labCanvas.height + 1000;
+    const container = labCanvas.parentElement;
+    container.style.height = newHeight + 'px';
+    labCanvas.height = newHeight;
+    
+    ctx.drawImage(tempCanvas, 0, 0);
     applyDrawingSettings();
   });
 
@@ -394,30 +553,37 @@ btnSaveDraw.addEventListener('click', () => {
 
 // --- SIDEBAR & NAVIGATION ---
 function toggleSidebar(forceCollapse) {
-  const isCollapsed = forceCollapse !== undefined ? forceCollapse : !sidebar.classList.contains('collapsed');
+  if (!sidebar) return;
   
-  if (isCollapsed) {
+  const isCurrentlyCollapsed = sidebar.classList.contains('collapsed');
+  const shouldCollapse = forceCollapse !== undefined ? forceCollapse : !isCurrentlyCollapsed;
+  
+  if (shouldCollapse) {
     sidebar.classList.add('collapsed');
+    sidebar.classList.remove('open');
     if (mainContainer) {
       mainContainer.classList.remove('sidebar-open-padding');
       mainContainer.classList.add('sidebar-collapsed-padding');
     }
   } else {
     sidebar.classList.remove('collapsed');
+    sidebar.classList.add('open');
     if (mainContainer) {
       mainContainer.classList.add('sidebar-open-padding');
       mainContainer.classList.remove('sidebar-collapsed-padding');
     }
   }
-  localStorage.setItem('sidebar-collapsed', isCollapsed);
+  localStorage.setItem('sidebar-collapsed', shouldCollapse);
 }
 
 if (btnToggleSidebarAll) btnToggleSidebarAll.addEventListener('click', () => toggleSidebar());
 if (btnCollapseSidebar) btnCollapseSidebar.addEventListener('click', () => toggleSidebar(true));
 
-// Restore sidebar state - Start CLOSED by default if no state saved
+// Restore sidebar state
 const savedSidebarState = localStorage.getItem('sidebar-collapsed');
-const initialState = savedSidebarState === null ? true : savedSidebarState === 'true';
+// On desktop, default to OPEN (false). On mobile, default to CLOSED (true).
+const isMobile = window.innerWidth < 1024;
+const initialState = savedSidebarState === null ? isMobile : savedSidebarState === 'true';
 toggleSidebar(initialState);
 
 if (btnSidebarWar) btnSidebarWar.addEventListener('click', () => {
@@ -480,7 +646,8 @@ if (btnToggleLab) btnToggleLab.addEventListener('click', () => {
 });
 
 if (btnSaveLab) btnSaveLab.addEventListener('click', () => {
-  set(ref(db, `users/juan/labNotes`), labTextarea.value);
+  if (!userRef) return;
+  set(ref(db, `users/${currentUser.uid}/labNotes`), labTextarea.value);
   if (labSection) labSection.classList.add('hidden');
 });
 
