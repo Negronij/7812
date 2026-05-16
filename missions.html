@@ -75,8 +75,22 @@
   <div class="container sidebar-open-padding pt-20 lg:pt-8" id="main-container">
     <header class="mb-8">
       <h1 class="text-huge">SISTEMA DE MISIONES</h1>
-      <p class="text-muted">No tareas. Misiones estratétegicas para tu progreso real.</p>
+      <p class="text-muted">No tareas. Misiones estratégicas para tu progreso real.</p>
     </header>
+
+    <!-- CALENDARIO SEMANAL -->
+    <section class="card mb-6">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="card-title">Calendario</h3>
+        <div class="flex gap-2">
+          <button id="btn-prev-week" class="btn-icon"><i data-lucide="chevron-left" style="width:16px"></i></button>
+          <button id="btn-next-week" class="btn-icon"><i data-lucide="chevron-right" style="width:16px"></i></button>
+        </div>
+      </div>
+      <div id="weekly-calendar" class="flex justify-between gap-2">
+        <!-- Renderizado por JS -->
+      </div>
+    </section>
 
     <div class="flex-col gap-6 max-w-2xl">
       <section class="card">
@@ -91,14 +105,64 @@
       
       <section class="card mt-6">
         <h3 class="card-title mb-4">Estadísticas de Cumplimiento</h3>
-        <div class="flex items-center gap-4">
-          <div class="flex-1">
-             <div class="text-small mb-1">Efectividad Semanal</div>
-             <div class="progress-bar-container"><div class="progress-bar" style="width: 75%; background-color: var(--accent-green)"></div></div>
+        <div class="grid lg:grid-cols-2 gap-4">
+          <div class="flex-col gap-2">
+            <div class="flex justify-between text-small">
+              <span>Efectividad Semanal</span>
+              <span id="weekly-efficiency">0%</span>
+            </div>
+            <div class="progress-bar-container"><div id="efficiency-bar" class="progress-bar" style="width: 0%; background-color: var(--accent-green)"></div></div>
           </div>
-          <div class="text-title text-accent-green">75%</div>
+          <div class="flex-col gap-2">
+            <div class="flex justify-between text-small">
+              <span>Misiones Completadas (Día)</span>
+              <span id="daily-completed">0/0</span>
+            </div>
+            <div class="progress-bar-container"><div id="daily-bar" class="progress-bar" style="width: 0%; background-color: var(--text-primary)"></div></div>
+          </div>
         </div>
       </section>
+    </div>
+  </div>
+
+  <!-- MODAL: AGREGAR MISIÓN -->
+  <div id="modal-mission" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[2100] flex items-center justify-center hidden">
+    <div class="card w-full max-w-md mx-4 animate-scale-in">
+      <div class="flex justify-between items-center mb-6">
+        <h3 class="text-title">Nueva Misión</h3>
+        <button id="btn-close-modal" class="btn-icon"><i data-lucide="x"></i></button>
+      </div>
+      <form id="form-mission" class="flex-col gap-4">
+        <div class="flex-col gap-1">
+          <label class="text-small">Nombre de la Misión</label>
+          <input type="text" id="mission-name" class="textarea w-full" placeholder="Ej: Dominar Cónicas" required>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div class="flex-col gap-1">
+            <label class="text-small">Dificultad</label>
+            <select id="mission-difficulty" class="textarea w-full">
+              <option value="Baja">Baja</option>
+              <option value="Media" selected>Media</option>
+              <option value="Alta">Alta</option>
+              <option value="Extrema">Extrema</option>
+            </select>
+          </div>
+          <div class="flex-col gap-1">
+            <label class="text-small">Duración</label>
+            <input type="text" id="mission-duration" class="textarea w-full" placeholder="Ej: 2h">
+          </div>
+        </div>
+        <div class="flex-col gap-1">
+          <label class="text-small">Impacto</label>
+          <select id="mission-impact" class="textarea w-full">
+            <option value="Bajo">Bajo</option>
+            <option value="Medio" selected>Medio</option>
+            <option value="Alto">Alto</option>
+            <option value="Crítico">Crítico</option>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-primary w-full mt-4 py-4">Guardar Misión</button>
+      </form>
     </div>
   </div>
 
