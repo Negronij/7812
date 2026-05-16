@@ -265,13 +265,24 @@ function resizeCanvas() {
 function applyDrawingSettings() {
   if (!ctx) return;
   
-  // Get the background color of the canvas container for the eraser
   const bgColor = window.getComputedStyle(labCanvas.parentElement).backgroundColor;
+  const strokeWidth = document.getElementById('stroke-width-slider').value;
   
   ctx.strokeStyle = currentTool === 'eraser' ? bgColor : currentColor;
-  ctx.lineWidth = currentTool === 'eraser' ? 40 : 3;
+  ctx.lineWidth = strokeWidth;
   ctx.lineCap = 'round';
   ctx.lineJoin = 'round';
+  
+  // Update UI
+  const valDisplay = document.getElementById('stroke-value');
+  if (valDisplay) valDisplay.innerText = strokeWidth + 'px';
+  
+  // Update Eraser Preview size
+  const eraserPreview = document.getElementById('eraser-preview');
+  if (eraserPreview) {
+    eraserPreview.style.width = strokeWidth + 'px';
+    eraserPreview.style.height = strokeWidth + 'px';
+  }
 }
 
 function startDrawing(e) {
@@ -285,11 +296,25 @@ function stopDrawing() {
 }
 
 function draw(e) {
-  if (!drawing || !ctx) return;
+  if (!ctx) return;
   
   const rect = labCanvas.getBoundingClientRect();
   const x = (e.clientX || (e.touches && e.touches[0].clientX)) - rect.left;
   const y = (e.clientY || (e.touches && e.touches[0].clientY)) - rect.top;
+
+  // Show/Hide/Move eraser preview
+  const eraserPreview = document.getElementById('eraser-preview');
+  if (eraserPreview) {
+    if (currentTool === 'eraser') {
+      eraserPreview.classList.remove('hidden');
+      eraserPreview.style.left = x + 'px';
+      eraserPreview.style.top = y + 'px';
+    } else {
+      eraserPreview.classList.add('hidden');
+    }
+  }
+
+  if (!drawing) return;
 
   ctx.lineTo(x, y);
   ctx.stroke();
@@ -322,6 +347,19 @@ if (labCanvas) {
     currentTool = 'eraser';
     btnEraser.classList.add('active');
     btnPen.classList.remove('active');
+    applyDrawingSettings();
+  });
+
+  const strokeSlider = document.getElementById('stroke-width-slider');
+  if (strokeSlider) strokeSlider.addEventListener('input', applyDrawingSettings);
+
+  const customColorPicker = document.getElementById('custom-color-picker');
+  if (customColorPicker) customColorPicker.addEventListener('input', (e) => {
+    currentColor = e.target.value;
+    currentTool = 'pen';
+    if (btnPen) btnPen.classList.add('active');
+    if (btnEraser) btnEraser.classList.remove('active');
+    colorBtns.forEach(b => b.classList.remove('active'));
     applyDrawingSettings();
   });
 
